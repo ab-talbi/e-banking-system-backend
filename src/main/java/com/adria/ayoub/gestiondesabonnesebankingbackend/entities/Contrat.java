@@ -24,6 +24,11 @@ public class Contrat {
     @JoinColumn(name = "abonne_id")
     private Abonne abonne;
 
-    //@OneToMany
-    //private List<Offre> offre;
+    @ManyToMany
+    @JoinTable(
+            name = "contrat_offre",
+            joinColumns = @JoinColumn(name = "abonne_id"),
+            inverseJoinColumns = @JoinColumn(name = "offre_id")
+    )
+    private List<Offre> offres;
 }

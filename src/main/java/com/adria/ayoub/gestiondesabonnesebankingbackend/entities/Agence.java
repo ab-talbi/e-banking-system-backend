@@ -2,20 +2,19 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
-@Data @AllArgsConstructor @NoArgsConstructor @ToString @Getter @Setter
+@Data @AllArgsConstructor @NoArgsConstructor @ToString
 public class Agence {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50) @NotBlank
+    @Column(length = 50) @NotNull
     private String nom;
 
-    @Column(length = 300) @NotBlank
+    @Column(length = 300) @NotNull
     private String adresse;
 }

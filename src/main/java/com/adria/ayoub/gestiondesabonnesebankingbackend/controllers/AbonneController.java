@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/abonne")
 public class AbonneController {
-
+/*
     private AbonneService abonneService;
 
     public AbonneController(AbonneService abonneService){
         this.abonneService = abonneService;
     }
+
+ */
 }

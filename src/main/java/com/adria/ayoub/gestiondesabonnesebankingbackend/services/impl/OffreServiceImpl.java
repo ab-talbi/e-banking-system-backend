@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OffreServiceImpl implements OffreService {
-
+    /*
     private OffreRepository offreRepository;
 
     public OffreServiceImpl(OffreRepository offreRepository){
         this.offreRepository = offreRepository;
     }
+
+     */
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
 public class Agence {
@@ -16,4 +18,7 @@ public class Agence {
 
     @Column(length = 300) @NotNull
     private String adresse;
+
+    @OneToMany(mappedBy = "agence",fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
+    private List<Abonne> abonnes;
 }

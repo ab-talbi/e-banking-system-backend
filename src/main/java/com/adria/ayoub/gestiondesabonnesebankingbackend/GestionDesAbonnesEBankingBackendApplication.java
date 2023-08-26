@@ -19,9 +19,9 @@ public class GestionDesAbonnesEBankingBackendApplication {
     @Bean
     CommandLineRunner commandLineRunner(AgenceRepository agenceRepository, BackOfficeRepository backOfficeRepository){
         return args -> {
-            agenceRepository.save(new Agence(null,"MARRAKECH ABDELKRIM EL KHATABI","N 45 IMMEUBLE AL KHATTABI AVENUE ABDELKRIM AL KHATTABI GUELIZ, Marrakech"));
-            agenceRepository.save(new Agence(null,"AIN CHOCK","812 ROUTE DE MEDIOUNA, Casablanca"));
-            agenceRepository.save(new Agence(null,"AGADIR DRARGA","HAY SIDI SAID DRARGA, Agadir"));
+            agenceRepository.save(new Agence(null,"MARRAKECH ABDELKRIM EL KHATABI","N 45 IMMEUBLE AL KHATTABI AVENUE ABDELKRIM AL KHATTABI GUELIZ, Marrakech",null));
+            agenceRepository.save(new Agence(null,"AIN CHOCK","812 ROUTE DE MEDIOUNA, Casablanca",null));
+            agenceRepository.save(new Agence(null,"AGADIR DRARGA","HAY SIDI SAID DRARGA, Agadir",null));
 
             agenceRepository.findAll().forEach(agence -> {
                 System.out.println(agence.toString());

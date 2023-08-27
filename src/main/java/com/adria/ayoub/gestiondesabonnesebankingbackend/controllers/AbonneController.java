@@ -3,6 +3,7 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.AbonneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -124,6 +125,25 @@ public class AbonneController {
         BackOffice backOffice = abonneService.trouverUnBackOfficeById(backoffice_id).get();
 
         abonne.setBackOffice(backOffice);
+
+        return abonneService.ajouterAbonne(abonne);
+    }
+
+    /**
+     * Put request pour changer le statut de l'abonné
+     * @param id de l'abonné
+     * @param requestBody new statut
+     * @return un abonné
+     */
+    @PutMapping("{id}/statut")
+    public Abonne changerLeStatutDeLAbonne(@PathVariable Long id, @RequestBody String requestBody){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+
+        String statutString = requestBody.replaceAll("\"", "").trim();
+
+        Statut statut = Statut.valueOf(statutString.toUpperCase());
+
+        abonne.setStatut(statut);
 
         return abonneService.ajouterAbonne(abonne);
     }

@@ -27,9 +27,9 @@ public class GestionDesAbonnesEBankingBackendApplication {
                 System.out.println(agence.toString());
             });
 
-            backOfficeRepository.save(new BackOffice(null,"El Amrani","Amine","amine.elamrani@example.ma"));
-            backOfficeRepository.save(new BackOffice(null,"Moussaoui","Leila","leila.moussaoui@example.ma"));
-            backOfficeRepository.save(new BackOffice(null,"Benjelloun","Youssef","youssef.benjelloun@example.ma"));
+            backOfficeRepository.save(new BackOffice(null,"El Amrani","Amine","amine.elamrani@example.ma",null));
+            backOfficeRepository.save(new BackOffice(null,"Moussaoui","Leila","leila.moussaoui@example.ma",null));
+            backOfficeRepository.save(new BackOffice(null,"Benjelloun","Youssef","youssef.benjelloun@example.ma",null));
 
             backOfficeRepository.findAll().forEach(backoffice -> {
                 System.out.println(backoffice.toString());

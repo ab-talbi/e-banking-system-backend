@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
@@ -31,5 +32,5 @@ public class Contrat {
             joinColumns = @JoinColumn(name = "abonne_id"),
             inverseJoinColumns = @JoinColumn(name = "offre_id")
     )
-    private List<Offre> offres;
+    private Set<Offre> offres = new HashSet<>();
 }

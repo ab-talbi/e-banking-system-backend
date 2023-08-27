@@ -1,7 +1,8 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.AbonneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +55,12 @@ public class AbonneController {
             _abonne.setTelephone(abonne.getTelephone());
             _abonne.setSexe(abonne.getSexe());
             _abonne.setStatut(abonne.getStatut());
-            _abonne.setAgence(abonne.getAgence());
-            _abonne.setBackOffice(abonne.getBackOffice());
+            if(abonne.getAgence() != null){
+                _abonne.setAgence(abonne.getAgence());
+            }
+            if(abonne.getBackOffice() != null){
+                _abonne.setBackOffice(abonne.getBackOffice());
+            }
             return new ResponseEntity<>(abonneService.ajouterAbonne(_abonne), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -89,6 +94,38 @@ public class AbonneController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Put Request Pour associer une agence à un abonné
+     * @param id de l'abonné
+     * @param agence_id de l'agence
+     * @return un Abonné
+     */
+    @PutMapping("/{id}/agence/{agence_id}")
+    public Abonne associerUneAgence(@PathVariable Long id, @PathVariable Long agence_id){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+        Agence agence = abonneService.trouverUneAgenceById(agence_id).get();
+
+        abonne.setAgence(agence);
+
+        return abonneService.ajouterAbonne(abonne);
+    }
+
+    /**
+     * Put Request pour associer un backoffice à un abonné
+     * @param id de l'abonné
+     * @param backoffice_id de backoffice
+     * @return un Abonné
+     */
+    @PutMapping("/{id}/backoffice/{backoffice_id}")
+    public Abonne associerUnBackOffice(@PathVariable Long id, @PathVariable Long backoffice_id){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+        BackOffice backOffice = abonneService.trouverUnBackOfficeById(backoffice_id).get();
+
+        abonne.setBackOffice(backOffice);
+
+        return abonneService.ajouterAbonne(abonne);
     }
 
 }

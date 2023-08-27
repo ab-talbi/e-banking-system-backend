@@ -1,10 +1,13 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
@@ -19,6 +22,7 @@ public class Offre {
     @Column(length = 300) @NotNull
     private String description;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "offres")
-    private List<Contrat> contrats;
+    private Set<Contrat> contrats = new HashSet<>();
 }

@@ -1,7 +1,11 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AbonneRepository;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AgenceRepository;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.BackOfficeRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.AbonneService;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +15,13 @@ import java.util.Optional;
 public class AbonneServiceImpl implements AbonneService {
 
     private AbonneRepository abonneRepository;
+    private AgenceRepository agenceRepository;
+    private BackOfficeRepository backOfficeRepository;
 
-    public AbonneServiceImpl(AbonneRepository abonneRepository){
+    public AbonneServiceImpl(AbonneRepository abonneRepository, AgenceRepository agenceRepository, BackOfficeRepository backOfficeRepository){
         this.abonneRepository = abonneRepository;
+        this.agenceRepository = agenceRepository;
+        this.backOfficeRepository = backOfficeRepository;
     }
 
     /**
@@ -51,5 +59,25 @@ public class AbonneServiceImpl implements AbonneService {
     @Override
     public void supprimerTousLesAbonnes() {
         abonneRepository.deleteAll();
+    }
+
+    /**
+     * Pour trouver une agence
+     * @param agence_id
+     * @return une Agence
+     */
+    @Override
+    public Optional<Agence> trouverUneAgenceById(Long agence_id) {
+        return agenceRepository.findById(agence_id);
+    }
+
+    /**
+     * Pour associé un back office
+     * @param backoffice_id
+     * @return BackOffice
+     */
+    @Override
+    public Optional<BackOffice> trouverUnBackOfficeById(Long backoffice_id) {
+        return backOfficeRepository.findById(backoffice_id);
     }
 }

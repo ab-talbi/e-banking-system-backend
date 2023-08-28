@@ -1,6 +1,8 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +12,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:8089")
 @RestController
-@RequestMapping("/api/contrat")
+@RequestMapping("/api/contrats")
 public class ContratController {
 
     private ContratService contratService;
@@ -87,6 +89,25 @@ public class ContratController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Put request pur changer le statut d'un contrat
+     * @param id de contrat
+     * @param requestBody contient le nouveau statut envoyé par l'utilisateur
+     * @return un objet de type Contrat
+     */
+    @PutMapping("{id}/statut")
+    public Contrat changerLeStatutDuContrat(@PathVariable Long id, @RequestBody String requestBody){
+        Contrat contrat = contratService.trouverUnContratById(id).get();
+
+        String statutString = requestBody.replaceAll("\"", "").trim();
+
+        Statut statut = Statut.valueOf(statutString.toUpperCase());
+
+        contrat.setStatut(statut);
+
+        return contratService.ajouterContrat(contrat);
     }
 
 }

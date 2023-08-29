@@ -1,7 +1,7 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
 import org.springframework.http.HttpStatus;
@@ -109,5 +109,45 @@ public class ContratController {
 
         return contratService.ajouterContrat(contrat);
     }
+
+    /**
+     * Put request pour ajouter un offre à un contrat
+     * @param id du contrat
+     * @param offre_id
+     * @return ResponseEntity<Contrat>, Ok si ajouté, Not ok si deja existe
+     */
+    @PutMapping("{id}/offres/{offre_id}")
+    public ResponseEntity<Contrat> ajouterUnOffreAUnContrat(@PathVariable Long id, @PathVariable Long offre_id){
+        Contrat contrat = contratService.trouverUnContratById(id).get();
+        Offre offre = contratService.trouverUnOffreById(offre_id).get();
+
+        if(contrat != null && offre != null){
+            if(contrat.ajouterOffre(offre)){
+                return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    /**
+     * Put request pour modifier un contrat par elemination d'un offre
+     * @param id du contrat
+     * @param offre_id
+     * @return ResponseEntity<Contrat>
+     */
+    @PutMapping("{id}/offres/{offre_id}/retirer")
+    public ResponseEntity<Contrat> retirerUnOffreDansUnContrat(@PathVariable Long id, @PathVariable Long offre_id){
+        Contrat contrat = contratService.trouverUnContratById(id).get();
+        Offre offre = contratService.trouverUnOffreById(offre_id).get();
+
+        if(contrat != null && offre != null){
+            contrat.retirerOffre(offre);
+            return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    }
+
+
 
 }

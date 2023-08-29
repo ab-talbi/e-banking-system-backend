@@ -5,9 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
@@ -24,5 +23,5 @@ public class Offre {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "offres")
-    private Set<Contrat> contrats = new HashSet<>();
+    private List<Contrat> contrats = new ArrayList<>();
 }

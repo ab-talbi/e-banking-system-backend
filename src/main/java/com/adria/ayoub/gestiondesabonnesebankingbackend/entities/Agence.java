@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
@@ -23,5 +23,5 @@ public class Agence {
 
     @JsonIgnore
     @OneToMany(mappedBy = "agence",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Abonne> abonnes = new HashSet<>();
+    private List<Abonne> abonnes = new ArrayList<>();
 }

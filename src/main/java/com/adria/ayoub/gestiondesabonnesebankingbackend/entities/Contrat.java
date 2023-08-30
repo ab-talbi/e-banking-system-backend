@@ -1,6 +1,7 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.entities;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -24,6 +25,7 @@ public class Contrat {
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "abonne_id")
     private Abonne abonne;

@@ -3,6 +3,7 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 
 import java.util.Optional;
 
@@ -45,4 +46,11 @@ public interface AbonneService {
      * @return Optional<BackOffice>
      */
     Optional<BackOffice> trouverUnBackOfficeById(Long backoffice_id);
+
+    /**
+     * Pour trouver un contrat
+     * @param contrat_id
+     * @return Optional<Contrat>
+     */
+    Optional<Contrat> trouverUnContratById(Long contrat_id);
 }

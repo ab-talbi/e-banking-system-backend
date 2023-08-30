@@ -3,6 +3,7 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.AbonneService;
 import org.springframework.http.HttpStatus;
@@ -125,6 +126,22 @@ public class AbonneController {
         BackOffice backOffice = abonneService.trouverUnBackOfficeById(backoffice_id).get();
 
         abonne.setBackOffice(backOffice);
+
+        return abonneService.ajouterAbonne(abonne);
+    }
+
+    /**
+     * Put request pour associer un contrat à un abonné
+     * @param id de l'abonné
+     * @param contrat_id
+     * @return l'abonné modifié
+     */
+    @PutMapping("/{id}/contrat/{contrat_id}")
+    public Abonne associerUnContrat(@PathVariable Long id, @PathVariable Long contrat_id){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+        Contrat contrat = abonneService.trouverUnContratById(contrat_id).get();
+
+        abonne.associerContrat(contrat);
 
         return abonneService.ajouterAbonne(abonne);
     }

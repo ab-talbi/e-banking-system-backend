@@ -3,9 +3,11 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AbonneRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AgenceRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.BackOfficeRepository;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.ContratRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.AbonneService;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +19,13 @@ public class AbonneServiceImpl implements AbonneService {
     private AbonneRepository abonneRepository;
     private AgenceRepository agenceRepository;
     private BackOfficeRepository backOfficeRepository;
+    private ContratRepository contratRepository;
 
-    public AbonneServiceImpl(AbonneRepository abonneRepository, AgenceRepository agenceRepository, BackOfficeRepository backOfficeRepository){
+    public AbonneServiceImpl(AbonneRepository abonneRepository, AgenceRepository agenceRepository, BackOfficeRepository backOfficeRepository, ContratRepository contratRepository){
         this.abonneRepository = abonneRepository;
         this.agenceRepository = agenceRepository;
         this.backOfficeRepository = backOfficeRepository;
+        this.contratRepository = contratRepository;
     }
 
     /**
@@ -79,5 +83,15 @@ public class AbonneServiceImpl implements AbonneService {
     @Override
     public Optional<BackOffice> trouverUnBackOfficeById(Long backoffice_id) {
         return backOfficeRepository.findById(backoffice_id);
+    }
+
+    /**
+     * Pour trouver un contrat
+     * @param contrat_id
+     * @return Optional<Contrat>
+     */
+    @Override
+    public Optional<Contrat> trouverUnContratById(Long contrat_id) {
+        return contratRepository.findById(contrat_id);
     }
 }

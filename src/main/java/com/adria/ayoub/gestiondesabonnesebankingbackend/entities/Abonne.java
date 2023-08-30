@@ -36,7 +36,7 @@ public class Abonne {
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "contrat_id")
     private Contrat contrat;
 
@@ -47,4 +47,16 @@ public class Abonne {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "backoffice_id", referencedColumnName = "id")
     private BackOffice backOffice;
+
+    /**
+     * Pour associer un contrat
+     * @param contrat
+     */
+    public void associerContrat(Contrat contrat){
+        if(this.contrat!=null){
+            this.contrat.setAbonne(null);
+        }
+        setContrat(contrat);
+        contrat.setAbonne(this);
+    }
 }

@@ -148,6 +148,15 @@ public class ContratController {
         return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @PutMapping("{id}/retirer_tous_les_offres")
+    public ResponseEntity<Contrat> retirerTousLesOffreDansUnContrat(@PathVariable Long id){
+        Contrat contrat = contratService.trouverUnContratById(id).get();
 
+        if(contrat != null){
+            contrat.retirerTousLesOffres();
+            return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    }
 
 }

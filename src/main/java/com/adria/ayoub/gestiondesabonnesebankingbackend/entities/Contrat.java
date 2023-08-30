@@ -57,4 +57,11 @@ public class Contrat {
         offres.remove(offre);
         offre.getContrats().remove(this);
     }
+
+    /**
+     * Pour retirer tous les offres du contrat
+     */
+    public void retirerTousLesOffres(){
+        offres.clear();
+    }
 }

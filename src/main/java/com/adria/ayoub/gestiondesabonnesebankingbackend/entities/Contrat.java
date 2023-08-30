@@ -9,8 +9,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.toIntExact;
-
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
 public class Contrat {

@@ -115,6 +115,20 @@ public class AbonneController {
     }
 
     /**
+     * Put request pour retirer l'agence associé
+     * @param id de l'abonné
+     * @return l'abonné modifié
+     */
+    @PutMapping("/{id}/retirer_agence")
+    public Abonne disassocierUneAgence(@PathVariable Long id){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+
+        abonne.setAgence(null);
+
+        return abonneService.ajouterAbonne(abonne);
+    }
+
+    /**
      * Put Request pour associer un backoffice à un abonné
      * @param id de l'abonné
      * @param backoffice_id de backoffice
@@ -126,6 +140,20 @@ public class AbonneController {
         BackOffice backOffice = abonneService.trouverUnBackOfficeById(backoffice_id).get();
 
         abonne.setBackOffice(backOffice);
+
+        return abonneService.ajouterAbonne(abonne);
+    }
+
+    /**
+     * Put request pour retirer un backoffice
+     * @param id de l'abonné
+     * @return l'abonné modifié
+     */
+    @PutMapping("/{id}/retirer_backoffice")
+    public Abonne disassocierUnCBackOffice(@PathVariable Long id){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+
+        abonne.setBackOffice(null);
 
         return abonneService.ajouterAbonne(abonne);
     }
@@ -146,6 +174,11 @@ public class AbonneController {
         return abonneService.ajouterAbonne(abonne);
     }
 
+    /**
+     * Put request pour disassocier un contrat
+     * @param id de l'abonné
+     * @return l'abonné modifié
+     */
     @PutMapping("/{id}/retirer_contrat")
     public Abonne disassocierUnContrat(@PathVariable Long id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();

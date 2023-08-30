@@ -146,6 +146,15 @@ public class AbonneController {
         return abonneService.ajouterAbonne(abonne);
     }
 
+    @PutMapping("/{id}/retirer_contrat")
+    public Abonne disassocierUnContrat(@PathVariable Long id){
+        Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+
+        abonne.disassocierContrat();
+
+        return abonneService.ajouterAbonne(abonne);
+    }
+
     /**
      * Put request pour changer le statut de l'abonné
      * @param id de l'abonné

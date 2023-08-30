@@ -53,10 +53,20 @@ public class Abonne {
      * @param contrat
      */
     public void associerContrat(Contrat contrat){
-        if(this.contrat!=null){
-            this.contrat.setAbonne(null);
-        }
+        //disassocier contrat si existe
+        disassocierContrat();
+
         setContrat(contrat);
         contrat.setAbonne(this);
+    }
+
+    /**
+     * Pour disassocier un contrat
+     */
+    public void disassocierContrat(){
+        if(this.contrat!=null){
+            this.contrat.setAbonne(null);
+            setContrat(null);
+        }
     }
 }

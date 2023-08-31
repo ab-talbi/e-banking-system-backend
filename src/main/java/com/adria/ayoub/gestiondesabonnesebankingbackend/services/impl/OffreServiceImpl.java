@@ -3,6 +3,8 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.OffreRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.OffreService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,6 +16,34 @@ public class OffreServiceImpl implements OffreService {
 
     public OffreServiceImpl(OffreRepository offreRepository){
         this.offreRepository = offreRepository;
+    }
+
+    /**
+     * Pour trouver tous les offres
+     * @param pageable
+     * @return une page des offres
+     */
+    @Override
+    public Page<Offre> trouverTousLesOffres(Pageable pageable) {
+        return offreRepository.findAll(pageable);
+    }
+
+    /**
+     * Pour trouver une list des offres à partir de clé
+     * @param search libelle ou description
+     * @param val clé à chercher
+     * @param pageable
+     * @return une page des offres
+     */
+    @Override
+    public Page<Offre> trouverUneListeDesOffres(String search, String val, Pageable pageable) {
+        if(search.equals("libelle")){
+            return offreRepository.findByLibelleContainingIgnoreCase(val,pageable);
+        }else if(search.equals("description")){
+            return offreRepository.findByDescriptionContainingIgnoreCase(val,pageable);
+        }else{
+            return Page.empty(pageable);
+        }
     }
 
     /**

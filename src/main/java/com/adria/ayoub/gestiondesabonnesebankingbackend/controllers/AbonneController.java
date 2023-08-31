@@ -150,7 +150,7 @@ public class AbonneController {
      * @return l'abonné modifié
      */
     @PutMapping("/{id}/retirer_backoffice")
-    public Abonne disassocierUnCBackOffice(@PathVariable Long id){
+    public Abonne disassocierUnBackOffice(@PathVariable Long id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
 
         abonne.setBackOffice(null);

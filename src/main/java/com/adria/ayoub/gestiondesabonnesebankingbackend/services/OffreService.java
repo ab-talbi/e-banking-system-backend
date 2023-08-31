@@ -1,10 +1,28 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface OffreService {
+
+    /**
+     * Pour trouver tous les offres
+     * @param pageable
+     * @return une page des offres
+     */
+    Page<Offre> trouverTousLesOffres(Pageable pageable);
+
+    /**
+     * Pour trouver une list des offres à partir de clé
+     * @param search libelle ou description
+     * @param val clé à chercher
+     * @param pageable
+     * @return une page des offres
+     */
+    Page<Offre> trouverUneListeDesOffres(String search,String val, Pageable pageable);
 
     /**
      * Pour ajouter un offre

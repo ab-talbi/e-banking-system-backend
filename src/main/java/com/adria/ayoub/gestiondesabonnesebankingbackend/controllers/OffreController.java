@@ -52,7 +52,7 @@ public class OffreController {
             Pageable pagingSort = PageRequest.of(page, PAGE_SIZE, Sort.by(orders));
 
             Page<Offre> pageOffres;
-            if (search == null){
+            if (search == null || val == null){
                 pageOffres = offreService.trouverTousLesOffres(pagingSort);
             }else {
                 pageOffres = offreService.trouverUneListeDesOffres(search,val, pagingSort);
@@ -166,10 +166,10 @@ public class OffreController {
      * @return soit Direction.ASC ou Direction.DESC
      */
     private Direction getSortDirection(String direction){
-        if(direction.equals("asc")){
-            return Direction.ASC;
-        }else{
+        if(direction.equals("desc")){
             return Direction.DESC;
+        }else{
+            return Direction.ASC;
         }
     }
 

@@ -4,10 +4,13 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:8089")
@@ -98,7 +101,7 @@ public class ContratController {
      * @return un objet de type Contrat
      */
     @PutMapping("{id}/statut")
-    public Contrat changerLeStatutDuContrat(@PathVariable Long id, @RequestBody String requestBody){
+    public ResponseEntity<Contrat> changerLeStatutDuContrat(@PathVariable Long id, @RequestBody String requestBody){
         Contrat contrat = contratService.trouverUnContratById(id).get();
 
         String statutString = requestBody.replaceAll("\"", "").trim();
@@ -107,7 +110,7 @@ public class ContratController {
 
         contrat.setStatut(statut);
 
-        return contratService.ajouterContrat(contrat);
+        return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
     }
 
     /**
@@ -148,6 +151,11 @@ public class ContratController {
         return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
+    /**
+     * Put request pour retirer tous les offres d'un contrat
+     * @param id du contrat
+     * @return ResponseEntity<Contrat>
+     */
     @PutMapping("{id}/retirer_tous_les_offres")
     public ResponseEntity<Contrat> retirerTousLesOffreDansUnContrat(@PathVariable Long id){
         Contrat contrat = contratService.trouverUnContratById(id).get();
@@ -159,4 +167,36 @@ public class ContratController {
         return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
+    /**
+     * Methode pour obtiens une liste des ordres pour les filtres
+     * @param sort de type String[]
+     * @return une liste des Order
+     */
+    private List<Sort.Order> getOrdersFromSortParam(String[] sort){
+        List<Sort.Order> orders = new ArrayList<Sort.Order>();
+
+        if (sort[0].contains(",")) {
+            for (String sortOrder : sort) {
+                String[] _sort = sortOrder.split(",");
+                orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
+            }
+        } else {
+            orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
+        }
+
+        return orders;
+    }
+
+    /**
+     * Methode pour obtenir la direction de Sort (pour convertir la deriction de String vers Direction)
+     * @param direction de type String
+     * @return soit Direction.ASC ou Direction.DESC
+     */
+    private Sort.Direction getSortDirection(String direction){
+        if(direction.equals("desc")){
+            return Sort.Direction.DESC;
+        }else{
+            return Sort.Direction.ASC;
+        }
+    }
 }

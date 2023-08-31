@@ -4,24 +4,76 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:8089")
 @RestController
 @RequestMapping("/api/contrats")
 public class ContratController {
 
+    private final int PAGE_SIZE = 10;
+
     private ContratService contratService;
 
     public ContratController(ContratService contratService){
         this.contratService = contratService;
+    }
+
+    /**
+     * Get request pour chercher/filtrer des contrats
+     * @param search pour identifier quelle partie de recherche (intitule, statut ou abonne)
+     * @param val valeur à chercher
+     * @param page numero de page
+     * @param sort filtre (field et direction)
+     * @return List des contrats  si existe et le statut ok, no content ou server error, et d'autre info comme page, totalpages...
+     */
+    @GetMapping("")
+    public ResponseEntity<Map<String, Object>> getTousLesContratsPage(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String val,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id,asc") String[] sort) {
+
+        if(page < 0){
+            page = 0;
+        }
+
+        try {
+            List<Sort.Order> orders = getOrdersFromSortParam(sort);
+
+            Pageable pagingSort = PageRequest.of(page, PAGE_SIZE, Sort.by(orders));
+
+            Page<Contrat> pageContrats;
+            if (search == null || val == null){
+                pageContrats = contratService.trouverTousLesContrats(pagingSort);
+            }else {
+                pageContrats = contratService.trouverUneListeDesContrats(search,val, pagingSort);
+            }
+
+            List<Contrat> contrats = pageContrats.getContent();
+
+            if (contrats.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("contrats", contrats);
+            response.put("page", pageContrats.getNumber());
+            response.put("totalDesContrats", pageContrats.getTotalElements());
+            response.put("totalDesPages", pageContrats.getTotalPages());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

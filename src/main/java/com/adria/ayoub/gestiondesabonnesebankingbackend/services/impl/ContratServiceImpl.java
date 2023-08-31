@@ -2,9 +2,12 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.ContratRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.OffreRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,6 +21,40 @@ public class ContratServiceImpl implements ContratService {
     public ContratServiceImpl(ContratRepository contratRepository, OffreRepository offreRepository){
         this.contratRepository = contratRepository;
         this.offreRepository = offreRepository;
+    }
+
+    /**
+     * Pour trouver tous les contrats
+     * @param pageable
+     * @return une page des contrats
+     */
+    @Override
+    public Page<Contrat> trouverTousLesContrats(Pageable pageable) {
+        return contratRepository.findAll(pageable);
+    }
+
+    /**
+     * Pour trouver une list des contrats à partir de clé
+     * @param search intitule, statut ou abonne
+     * @param val clé à chercher
+     * @param pageable
+     * @return une page des contrats
+     */
+    @Override
+    public Page<Contrat> trouverUneListeDesContrats(String search, String val, Pageable pageable) {
+        if(search.equals("intitule")){
+            return contratRepository.findByIntituleContainingIgnoreCase(val,pageable);
+        }else if(search.equals("statut")){
+            if(val.equals("ACTIF") || val.equals("SUSPENDU")){
+                Statut statut = Statut.valueOf(val);
+                return contratRepository.findByStatut(statut,pageable);
+            }
+            return Page.empty(pageable);
+        }else if(search.equals("abonne")){
+            return contratRepository.findByNomOuPrenomAbonneContains(val,pageable);
+        }else{
+            return Page.empty(pageable);
+        }
     }
 
     /**

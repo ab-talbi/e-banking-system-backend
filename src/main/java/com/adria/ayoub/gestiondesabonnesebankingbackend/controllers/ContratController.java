@@ -1,5 +1,6 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
@@ -36,7 +37,7 @@ public class ContratController {
      * @return List des contrats  si existe et le statut ok, no content ou server error, et d'autre info comme page, totalpages...
      */
     @GetMapping("")
-    public ResponseEntity<Map<String, Object>> getTousLesContratsPage(
+    public ResponseEntity<Map<String, Object>> getLesContratsPage(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String val,
             @RequestParam(defaultValue = "0") int page,
@@ -73,6 +74,21 @@ public class ContratController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Get request pour trouver un seul contrat
+     * @param id du contrat
+     * @return ResponseEntity<Contrat>
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Contrat> getUnSeulContrat(@PathVariable Long id){
+        try{
+            Contrat contrat = contratService.trouverUnContratById(id).get();
+            return new ResponseEntity<>(contrat,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

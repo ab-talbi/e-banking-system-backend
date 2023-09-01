@@ -79,6 +79,21 @@ public class AbonneController {
     }
 
     /**
+     * Get request pour trouver un seul abonné
+     * @param id de l'abonné
+     * @return ResponseEntity<Abonne>
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Abonne> getUnSeulAbonne(@PathVariable Long id){
+        try{
+            Abonne abonne = abonneService.trouverUnAbonneById(id).get();
+            return new ResponseEntity<>(abonne,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * methode Post pour la creation d'un abonné
      * @param abonne entity
      * @return ResponseEntity

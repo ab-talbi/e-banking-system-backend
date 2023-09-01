@@ -1,43 +1,47 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface ContratService {
 
     /**
-     * Pour trouver tous les contrats
-     * @param pageable
+     * Pour trouver une list des contrats
+     * @param search mot clé (intitule, statut ou abonné)
+     * @param val valeur à chercher
+     * @param page numero de page
+     * @param sort pour filtrer (field et direction)
      * @return une page des contrats
      */
-    Page<Contrat> trouverTousLesContrats(Pageable pageable);
-
-    /**
-     * Pour trouver une list des contrats à partir de clé
-     * @param search intitule, statut ou abonne
-     * @param val clé à chercher
-     * @param pageable
-     * @return une page des contrats
-     */
-    Page<Contrat> trouverUneListeDesContrats(String search,String val, Pageable pageable);
+    Page<Contrat> trouverLesContrats(String search, String val, int page, String[] sort);
 
     /**
      * Pour ajouter un contrat
-     * @param contrat
+     * @param contratDto
      * @return un objet de type Contrat
      */
-    Contrat ajouterContrat(Contrat contrat);
+    Contrat ajouterContrat(ContratDto contratDto);
+
+    /**
+     * Pour modifier un contrat
+     * @param id du contrat
+     * @param contratDto dto
+     * @return un objet de type Contrat
+     */
+    Contrat modifierContrat(Long id,ContratDto contratDto) throws NotFoundException;
 
     /**
      * Pour teouver un contrat
      * @param id de contrat à trouver
      * @return Optional<Contrat>
      */
-    Optional<Contrat> trouverUnContratById(Long id);
+    Contrat trouverUnContratById(Long id) throws NotFoundException;
 
     /**
      * Pour supprimer un contrat
@@ -56,4 +60,35 @@ public interface ContratService {
      * @return Optional<Offre>
      */
     Optional<Offre> trouverUnOffreById(Long offre_id);
+
+    /**
+     * Pour changer le statut du cintrat
+     * @param id du contrat
+     * @param requestBody la valeur de statut
+     * @return un objet de type Contrat
+     */
+    Contrat changerLeStatutDuContrat(Long id, String requestBody) throws NotFoundException;
+
+    /**
+     * Pour ajouter un offre à un contrat
+     * @param id du contrat
+     * @param offre_id
+     * @return un objet de type contrat
+     */
+    Contrat ajouterUnOffreAUnContrat(Long id, Long offre_id) throws NotFoundException, AlreadyExistsException;
+
+    /**
+     * Pour retirer un offre d'un contrat
+     * @param id du contrat
+     * @param offre_id
+     * @return un objet de type Contrat
+     */
+    Contrat retirerUnOffreDansUnContrat(Long id, Long offre_id) throws NotFoundException;
+
+    /**
+     * Pour retirer tous les offres du contrat
+     * @param id du contrat
+     * @return un objet de type Contrat
+     */
+    Contrat retirerTousLesOffreDansUnContrat(Long id) throws NotFoundException;
 }

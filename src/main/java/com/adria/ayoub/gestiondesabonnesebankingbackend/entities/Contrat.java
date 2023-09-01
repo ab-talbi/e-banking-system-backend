@@ -15,12 +15,7 @@ public class Contrat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 50) @NotNull
     private String intitule;
-
-    @Column(length = 10) @NotNull
-    @Enumerated(EnumType.STRING)
     private Statut statut;
 
     @JsonIgnore

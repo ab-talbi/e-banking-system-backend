@@ -1,13 +1,12 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +17,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/contrats")
 public class ContratController {
-
-    private final int PAGE_SIZE = 10;
 
     private ContratService contratService;
 
@@ -42,21 +39,9 @@ public class ContratController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id,asc") String[] sort) {
 
-        if(page < 0){
-            page = 0;
-        }
-
         try {
-            List<Sort.Order> orders = getOrdersFromSortParam(sort);
 
-            Pageable pagingSort = PageRequest.of(page, PAGE_SIZE, Sort.by(orders));
-
-            Page<Contrat> pageContrats;
-            if (search == null || val == null){
-                pageContrats = contratService.trouverTousLesContrats(pagingSort);
-            }else {
-                pageContrats = contratService.trouverUneListeDesContrats(search,val, pagingSort);
-            }
+            Page<Contrat> pageContrats = contratService.trouverLesContrats(search,val,page,sort);
 
             List<Contrat> contrats = pageContrats.getContent();
 
@@ -80,56 +65,35 @@ public class ContratController {
      * Get request pour trouver un seul contrat
      * @param id du contrat
      * @return ResponseEntity<Contrat>
+     * @throws NotFoundException
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Contrat> getUnSeulContrat(@PathVariable Long id){
-        try{
-            Contrat contrat = contratService.trouverUnContratById(id).get();
-            return new ResponseEntity<>(contrat,HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Contrat> getUnSeulContrat(@PathVariable Long id) throws NotFoundException {
+        Contrat contrat = contratService.trouverUnContratById(id);
+        return new ResponseEntity<>(contrat,HttpStatus.OK);
     }
 
     /**
      * Post request pour ajouter un contrat
-     * @param contrat
+     * @param contratDto
      * @return ResponseEntity<Contrat>
      */
     @PostMapping
-    public ResponseEntity<Contrat> ajouterUnContrat(@RequestBody Contrat contrat) {
-        try {
-            Contrat _contrat = contratService.ajouterContrat(new Contrat(null,contrat.getIntitule(), contrat.getStatut(),contrat.getAbonne(),contrat.getOffres()));
-            return new ResponseEntity<>(_contrat, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Contrat> ajouterUnContrat(@RequestBody @Valid ContratDto contratDto) {
+        Contrat contrat = contratService.ajouterContrat(contratDto);
+        return new ResponseEntity<>(contrat, HttpStatus.CREATED);
     }
 
     /**
      * Put request pour modifier un offre
      * @param id de l'offre à modifier
-     * @param contrat fournit par l'utilisateur
+     * @param contratDto fournit par l'utilisateur
      * @return ResponseEntity<Contrat>
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Contrat> modifierUnContrat(@PathVariable("id") Long id, @RequestBody Contrat contrat) {
-        Optional<Contrat> contratOptional = contratService.trouverUnContratById(id);
-
-        if (contratOptional.isPresent()) {
-            Contrat _contrat = contratOptional.get();
-            _contrat.setIntitule(contrat.getIntitule());
-            _contrat.setStatut(contrat.getStatut());
-            if(contrat.getAbonne() != null){
-                _contrat.setAbonne(contrat.getAbonne());
-            }
-            if(contrat.getOffres() != null){
-                _contrat.setOffres(contrat.getOffres());
-            }
-            return new ResponseEntity<>(contratService.ajouterContrat(_contrat), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Contrat> modifierUnContrat(@PathVariable("id") Long id, @RequestBody @Valid ContratDto contratDto) throws NotFoundException {
+        Contrat contrat = contratService.modifierContrat(id,contratDto);
+        return new ResponseEntity<>(contrat, HttpStatus.OK);
     }
 
     /**
@@ -139,12 +103,8 @@ public class ContratController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> supprimerUnContrat(@PathVariable("id") Long id) {
-        try {
-            contratService.supprimerContratById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        contratService.supprimerContratById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -153,12 +113,8 @@ public class ContratController {
      */
     @DeleteMapping
     public ResponseEntity<HttpStatus> supprimerTousLesContrats() {
-        try {
-            contratService.supprimerTousLesContrats();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        contratService.supprimerTousLesContrats();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -168,16 +124,9 @@ public class ContratController {
      * @return un objet de type Contrat
      */
     @PutMapping("{id}/statut")
-    public ResponseEntity<Contrat> changerLeStatutDuContrat(@PathVariable Long id, @RequestBody String requestBody){
-        Contrat contrat = contratService.trouverUnContratById(id).get();
-
-        String statutString = requestBody.replaceAll("\"", "").trim();
-
-        Statut statut = Statut.valueOf(statutString.toUpperCase());
-
-        contrat.setStatut(statut);
-
-        return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
+    public ResponseEntity<Contrat> changerLeStatutDuContrat(@PathVariable Long id, @RequestBody String requestBody) throws NotFoundException {
+        Contrat contrat = contratService.changerLeStatutDuContrat(id,requestBody);
+        return new ResponseEntity<>(contrat, HttpStatus.OK);
     }
 
     /**
@@ -187,17 +136,9 @@ public class ContratController {
      * @return ResponseEntity<Contrat>, Ok si ajouté, Not ok si deja existe
      */
     @PutMapping("{id}/offres/{offre_id}")
-    public ResponseEntity<Contrat> ajouterUnOffreAUnContrat(@PathVariable Long id, @PathVariable Long offre_id){
-        Contrat contrat = contratService.trouverUnContratById(id).get();
-        Offre offre = contratService.trouverUnOffreById(offre_id).get();
-
-        if(contrat != null && offre != null){
-            if(contrat.ajouterOffre(offre)){
-                return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<Contrat> ajouterUnOffreAUnContrat(@PathVariable Long id, @PathVariable Long offre_id) throws NotFoundException, AlreadyExistsException {
+        Contrat contrat = contratService.ajouterUnOffreAUnContrat(id,offre_id);
+        return new ResponseEntity<>(contrat,HttpStatus.OK);
     }
 
     /**
@@ -207,15 +148,9 @@ public class ContratController {
      * @return ResponseEntity<Contrat>
      */
     @PutMapping("{id}/offres/{offre_id}/retirer")
-    public ResponseEntity<Contrat> retirerUnOffreDansUnContrat(@PathVariable Long id, @PathVariable Long offre_id){
-        Contrat contrat = contratService.trouverUnContratById(id).get();
-        Offre offre = contratService.trouverUnOffreById(offre_id).get();
-
-        if(contrat != null && offre != null){
-            contrat.retirerOffre(offre);
-            return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<Contrat> retirerUnOffreDansUnContrat(@PathVariable Long id, @PathVariable Long offre_id) throws NotFoundException {
+        Contrat contrat = contratService.retirerUnOffreDansUnContrat(id,offre_id);
+        return new ResponseEntity<>(contrat,HttpStatus.OK);
     }
 
     /**
@@ -224,46 +159,9 @@ public class ContratController {
      * @return ResponseEntity<Contrat>
      */
     @PutMapping("{id}/retirer_tous_les_offres")
-    public ResponseEntity<Contrat> retirerTousLesOffreDansUnContrat(@PathVariable Long id){
-        Contrat contrat = contratService.trouverUnContratById(id).get();
-
-        if(contrat != null){
-            contrat.retirerTousLesOffres();
-            return new ResponseEntity<>(contratService.ajouterContrat(contrat), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<Contrat> retirerTousLesOffreDansUnContrat(@PathVariable Long id) throws NotFoundException {
+        Contrat contrat = contratService.retirerTousLesOffreDansUnContrat(id);
+        return new ResponseEntity<>(contrat,HttpStatus.OK);
     }
 
-    /**
-     * Methode pour obtiens une liste des ordres pour les filtres
-     * @param sort de type String[]
-     * @return une liste des Order
-     */
-    private List<Sort.Order> getOrdersFromSortParam(String[] sort){
-        List<Sort.Order> orders = new ArrayList<Sort.Order>();
-
-        if (sort[0].contains(",")) {
-            for (String sortOrder : sort) {
-                String[] _sort = sortOrder.split(",");
-                orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
-            }
-        } else {
-            orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
-        }
-
-        return orders;
-    }
-
-    /**
-     * Methode pour obtenir la direction de Sort (pour convertir la deriction de String vers Direction)
-     * @param direction de type String
-     * @return soit Direction.ASC ou Direction.DESC
-     */
-    private Sort.Direction getSortDirection(String direction){
-        if(direction.equals("desc")){
-            return Sort.Direction.DESC;
-        }else{
-            return Sort.Direction.ASC;
-        }
-    }
 }

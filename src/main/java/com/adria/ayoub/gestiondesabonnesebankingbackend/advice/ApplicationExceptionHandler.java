@@ -1,5 +1,6 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.advice;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,6 +39,19 @@ public class ApplicationExceptionHandler {
     public Map<String,String> handleNotFoundException(NotFoundException notFoundException){
         Map<String,String> erreur = new HashMap<>();
         erreur.put("erreur",notFoundException.getMessage());
+        return erreur;
+    }
+
+    /**
+     * Pour la gestion de AlreadyExistsException
+     * @param alreadyExistsException
+     * @return Map<String,String>
+     */
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(AlreadyExistsException.class)
+    public Map<String,String> handleAlreadyExistsException(AlreadyExistsException alreadyExistsException){
+        Map<String,String> erreur = new HashMap<>();
+        erreur.put("erreur",alreadyExistsException.getMessage());
         return erreur;
     }
 }

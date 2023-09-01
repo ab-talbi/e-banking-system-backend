@@ -4,10 +4,29 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface AbonneService {
+
+    /**
+     * Pour trouver tous les abonnes
+     * @param pageable
+     * @return une page des abonnes
+     */
+    Page<Abonne> trouverTousLesAbonnes(Pageable pageable);
+
+    /**
+     * Pour trouver une list des abonnes à partir de clé
+     * @param search nom, prenom, tel, email, statut, sexe...
+     * @param val clé à chercher
+     * @param pageable
+     * @return une page des abonnes
+     */
+    Page<Abonne> trouverUneListeDesAbonnes(String search,String val, Pageable pageable);
+
     /**
      * Pour ajouter un abonné
      * @param abonne
@@ -53,4 +72,11 @@ public interface AbonneService {
      * @return Optional<Contrat>
      */
     Optional<Contrat> trouverUnContratById(Long contrat_id);
+
+    /**
+     * Pour convertir un String à un Long pour les deux methodes de l'agence et backoffice
+     * @param input string
+     * @return Long
+     */
+    Long stringToLong(String input);
 }

@@ -6,21 +6,76 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.AbonneService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:8089")
 @RestController
 @RequestMapping("/api/abonnes")
 public class AbonneController {
 
+    private final int PAGE_SIZE = 10;
+
     private AbonneService abonneService;
  
     public AbonneController(AbonneService abonneService){
         this.abonneService = abonneService;
+    }
+
+    /**
+     * Get request pour chercher/filtrer des abonnés
+     * @param search pour identifier quelle partie de recherche (nom, prenom, email, tel, sexe, statut...)
+     * @param val valeur à chercher
+     * @param page numero de page
+     * @param sort filtre (field et direction)
+     * @return List des abonnés si existe et le statut ok, no content ou server error, et d'autre info comme page, totalpages...
+     */
+    @GetMapping("")
+    public ResponseEntity<Map<String, Object>> getLesAbonnesPage(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String val,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id,asc") String[] sort) {
+
+        if(page < 0){
+            page = 0;
+        }
+
+        try {
+            List<Sort.Order> orders = getOrdersFromSortParam(sort);
+
+            Pageable pagingSort = PageRequest.of(page, PAGE_SIZE, Sort.by(orders));
+
+            Page<Abonne> pageAbonnes;
+            if (search == null || val == null){
+                pageAbonnes = abonneService.trouverTousLesAbonnes(pagingSort);
+            }else {
+                pageAbonnes = abonneService.trouverUneListeDesAbonnes(search, val, pagingSort);
+            }
+
+            List<Abonne> abonnes = pageAbonnes.getContent();
+
+            if (abonnes.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("abonnes", abonnes);
+            response.put("page", pageAbonnes.getNumber());
+            response.put("totalDesAbonnes", pageAbonnes.getTotalElements());
+            response.put("totalDesPages", pageAbonnes.getTotalPages());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -105,13 +160,13 @@ public class AbonneController {
      * @return un Abonné
      */
     @PutMapping("/{id}/agence/{agence_id}")
-    public Abonne associerUneAgence(@PathVariable Long id, @PathVariable Long agence_id){
+    public ResponseEntity<Abonne> associerUneAgence(@PathVariable Long id, @PathVariable Long agence_id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
         Agence agence = abonneService.trouverUneAgenceById(agence_id).get();
 
         abonne.setAgence(agence);
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
     /**
@@ -120,12 +175,12 @@ public class AbonneController {
      * @return l'abonné modifié
      */
     @PutMapping("/{id}/retirer_agence")
-    public Abonne disassocierUneAgence(@PathVariable Long id){
+    public ResponseEntity<Abonne> disassocierUneAgence(@PathVariable Long id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
 
         abonne.setAgence(null);
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
     /**
@@ -135,13 +190,13 @@ public class AbonneController {
      * @return un Abonné
      */
     @PutMapping("/{id}/backoffice/{backoffice_id}")
-    public Abonne associerUnBackOffice(@PathVariable Long id, @PathVariable Long backoffice_id){
+    public ResponseEntity<Abonne> associerUnBackOffice(@PathVariable Long id, @PathVariable Long backoffice_id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
         BackOffice backOffice = abonneService.trouverUnBackOfficeById(backoffice_id).get();
 
         abonne.setBackOffice(backOffice);
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
     /**
@@ -150,12 +205,12 @@ public class AbonneController {
      * @return l'abonné modifié
      */
     @PutMapping("/{id}/retirer_backoffice")
-    public Abonne disassocierUnBackOffice(@PathVariable Long id){
+    public ResponseEntity<Abonne> disassocierUnBackOffice(@PathVariable Long id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
 
         abonne.setBackOffice(null);
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
     /**
@@ -165,13 +220,13 @@ public class AbonneController {
      * @return l'abonné modifié
      */
     @PutMapping("/{id}/contrat/{contrat_id}")
-    public Abonne associerUnContrat(@PathVariable Long id, @PathVariable Long contrat_id){
+    public ResponseEntity<Abonne> associerUnContrat(@PathVariable Long id, @PathVariable Long contrat_id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
         Contrat contrat = abonneService.trouverUnContratById(contrat_id).get();
 
         abonne.associerContrat(contrat);
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
     /**
@@ -180,12 +235,12 @@ public class AbonneController {
      * @return l'abonné modifié
      */
     @PutMapping("/{id}/retirer_contrat")
-    public Abonne disassocierUnContrat(@PathVariable Long id){
+    public ResponseEntity<Abonne> disassocierUnContrat(@PathVariable Long id){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
 
         abonne.disassocierContrat();
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
     /**
@@ -195,7 +250,7 @@ public class AbonneController {
      * @return un abonné
      */
     @PutMapping("{id}/statut")
-    public Abonne changerLeStatutDeLAbonne(@PathVariable Long id, @RequestBody String requestBody){
+    public ResponseEntity<Abonne> changerLeStatutDeLAbonne(@PathVariable Long id, @RequestBody String requestBody){
         Abonne abonne = abonneService.trouverUnAbonneById(id).get();
 
         String statutString = requestBody.replaceAll("\"", "").trim();
@@ -204,7 +259,39 @@ public class AbonneController {
 
         abonne.setStatut(statut);
 
-        return abonneService.ajouterAbonne(abonne);
+        return new ResponseEntity<>(abonneService.ajouterAbonne(abonne), HttpStatus.OK);
     }
 
+    /**
+     * Methode pour obtiens une liste des ordres pour les filtres
+     * @param sort de type String[]
+     * @return une liste des Order
+     */
+    private List<Sort.Order> getOrdersFromSortParam(String[] sort){
+        List<Sort.Order> orders = new ArrayList<Sort.Order>();
+
+        if (sort[0].contains(",")) {
+            for (String sortOrder : sort) {
+                String[] _sort = sortOrder.split(",");
+                orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
+            }
+        } else {
+            orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
+        }
+
+        return orders;
+    }
+
+    /**
+     * Methode pour obtenir la direction de Sort (pour convertir la deriction de String vers Direction)
+     * @param direction de type String
+     * @return soit Direction.ASC ou Direction.DESC
+     */
+    private Sort.Direction getSortDirection(String direction){
+        if(direction.equals("desc")){
+            return Sort.Direction.DESC;
+        }else{
+            return Sort.Direction.ASC;
+        }
+    }
 }

@@ -36,7 +36,7 @@ public class OffreController {
      * @return List des offres  si existe et le statut ok, no content ou server error, et d'autre info comme page totalpages...
      */
     @GetMapping("")
-    public ResponseEntity<Map<String, Object>> getTousLesOffresPage(
+    public ResponseEntity<Map<String, Object>> getLesOffresPage(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String val,
             @RequestParam(defaultValue = "0") int page,
@@ -73,6 +73,21 @@ public class OffreController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Get request pour trouver un seul offre
+     * @param id de l'offre
+     * @return ResponseEntity<Offre>
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Offre> getUnSeulOffre(@PathVariable Long id){
+        try{
+            Offre offre = offreService.trouverUnOffreById(id).get();
+            return new ResponseEntity<>(offre,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

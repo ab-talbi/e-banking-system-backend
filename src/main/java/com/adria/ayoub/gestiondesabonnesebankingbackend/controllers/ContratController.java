@@ -1,6 +1,5 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;

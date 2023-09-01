@@ -3,7 +3,6 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.entities;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;

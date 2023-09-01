@@ -182,16 +182,6 @@ public class ContratServiceImpl implements ContratService {
     }
 
     /**
-     * Pour trouver un offre
-     * @param offre_id de l'offre
-     * @return Optional<Offre>
-     */
-    @Override
-    public Optional<Offre> trouverUnOffreById(Long offre_id) {
-        return offreRepository.findById(offre_id);
-    }
-
-    /**
      * Pour changer le statut du cintrat
      * @param id du contrat
      * @param requestBody la valeur de statut

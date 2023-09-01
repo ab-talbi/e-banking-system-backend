@@ -1,13 +1,11 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.OffreDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.OffreService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +16,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/offres")
 public class OffreController {
-
-    private final int PAGE_SIZE = 10;
 
     private OffreService offreService;
 
@@ -42,21 +38,8 @@ public class OffreController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id,asc") String[] sort) {
 
-        if(page < 0){
-            page = 0;
-        }
-
         try {
-            List<Order> orders = getOrdersFromSortParam(sort);
-
-            Pageable pagingSort = PageRequest.of(page, PAGE_SIZE, Sort.by(orders));
-
-            Page<Offre> pageOffres;
-            if (search == null || val == null){
-                pageOffres = offreService.trouverTousLesOffres(pagingSort);
-            }else {
-                pageOffres = offreService.trouverUneListeDesOffres(search,val, pagingSort);
-            }
+            Page<Offre> pageOffres = offreService.trouverLesOffres(search,val,page,sort);
 
             List<Offre> offres = pageOffres.getContent();
 
@@ -82,48 +65,32 @@ public class OffreController {
      * @return ResponseEntity<Offre>
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Offre> getUnSeulOffre(@PathVariable Long id){
-        try{
-            Offre offre = offreService.trouverUnOffreById(id).get();
-            return new ResponseEntity<>(offre,HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Offre> getUnSeulOffre(@PathVariable Long id) throws NotFoundException {
+        Offre offre = offreService.trouverUnOffreById(id);
+        return new ResponseEntity<>(offre,HttpStatus.OK);
     }
 
     /**
      * methode Post pour la creation d'un offre
-     * @param offre entity
+     * @param offreDto dto
      * @return ResponseEntity
      */
     @PostMapping
-    public ResponseEntity<Offre> ajouterUnOffre(@RequestBody Offre offre) {
-        try {
-            Offre _offre = offreService.ajouterOffre(new Offre(null,offre.getLibelle(), offre.getDescription(),null));
-            return new ResponseEntity<>(_offre, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Offre> ajouterUnOffre(@RequestBody @Valid OffreDto offreDto) {
+        Offre offre = offreService.ajouterOffre(offreDto);
+        return new ResponseEntity<>(offre, HttpStatus.CREATED);
     }
 
     /**
      * Put methode pour modifier un offre
      * @param id de l'offre
-     * @param offre l'objet envoyé par le client
+     * @param offreDto l'objet envoyé par le client
      * @return ResponseEntity
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Offre> modifierUnOffre(@PathVariable("id") Long id, @RequestBody Offre offre) {
-        Optional<Offre> offreOptional = offreService.trouverUnOffreById(id);
-
-        if (offreOptional.isPresent()) {
-            Offre _offre = offreOptional.get();
-            _offre.setLibelle(offre.getLibelle());
-            _offre.setDescription(offre.getDescription());
-            return new ResponseEntity<>(offreService.ajouterOffre(_offre), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Offre> modifierUnOffre(@PathVariable("id") Long id, @RequestBody @Valid OffreDto offreDto) throws NotFoundException {
+        Offre offre = offreService.modifierOffre(id,offreDto);
+        return new ResponseEntity<>(offre, HttpStatus.OK);
     }
 
     /**
@@ -133,12 +100,8 @@ public class OffreController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> supprimerUnOffre(@PathVariable("id") Long id) {
-        try {
-            offreService.supprimerOffreById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        offreService.supprimerOffreById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -147,45 +110,8 @@ public class OffreController {
      */
     @DeleteMapping
     public ResponseEntity<HttpStatus> supprimerTousLesOffres() {
-        try {
-            offreService.supprimerTousLesOffres();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * Methode pour obtiens une liste des ordres pour les filtres
-     * @param sort de type String[]
-     * @return une liste des Order
-     */
-    private List<Order> getOrdersFromSortParam(String[] sort){
-        List<Order> orders = new ArrayList<Order>();
-
-        if (sort[0].contains(",")) {
-            for (String sortOrder : sort) {
-                String[] _sort = sortOrder.split(",");
-                orders.add(new Order(getSortDirection(_sort[1]), _sort[0]));
-            }
-        } else {
-            orders.add(new Order(getSortDirection(sort[1]), sort[0]));
-        }
-
-        return orders;
-    }
-
-    /**
-     * Methode pour obtenir la direction de Sort (pour convertir la deriction de String vers Direction)
-     * @param direction de type String
-     * @return soit Direction.ASC ou Direction.DESC
-     */
-    private Direction getSortDirection(String direction){
-        if(direction.equals("desc")){
-            return Direction.DESC;
-        }else{
-            return Direction.ASC;
-        }
+        offreService.supprimerTousLesOffres();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

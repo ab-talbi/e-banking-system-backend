@@ -1,42 +1,43 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.OffreDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.Optional;
 
 public interface OffreService {
 
     /**
-     * Pour trouver tous les offres
-     * @param pageable
+     * Pour trouver une list des offres
+     * @param search mot clé (libelle ou description)
+     * @param val valeur à chercher
+     * @param page numero de page
+     * @param sort pour filtrer (field et direction)
      * @return une page des offres
      */
-    Page<Offre> trouverTousLesOffres(Pageable pageable);
-
-    /**
-     * Pour trouver une list des offres à partir de clé
-     * @param search libelle ou description
-     * @param val clé à chercher
-     * @param pageable
-     * @return une page des offres
-     */
-    Page<Offre> trouverUneListeDesOffres(String search,String val, Pageable pageable);
+    Page<Offre> trouverLesOffres(String search,String val, int page, String[] sort);
 
     /**
      * Pour ajouter un offre
-     * @param offre à ajouter
+     * @param offreDto à ajouter
      * @return objet de type offre
      */
-    Offre ajouterOffre(Offre offre);
+    Offre ajouterOffre(OffreDto offreDto);
+
+    /**
+     * Pour modifier un offre
+     * @param id de l'offre
+     * @param offreDto dto
+     * @return un objet de type Offre
+     */
+    Offre modifierOffre(Long id,OffreDto offreDto) throws NotFoundException;
 
     /**
      * Pour trouver un offre
      * @param id de l'offre à trouver
      * @return Optional<Offre>
      */
-    Optional<Offre> trouverUnOffreById(Long id);
+    Offre trouverUnOffreById(Long id) throws NotFoundException;
 
     /**
      * Pour supprimer un offre

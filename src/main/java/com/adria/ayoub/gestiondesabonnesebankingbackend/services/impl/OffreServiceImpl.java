@@ -1,16 +1,23 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.OffreDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.OffreRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.OffreService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OffreServiceImpl implements OffreService {
+
+    private final int PAGE_SIZE = 10;
 
     private OffreRepository offreRepository;
 
@@ -19,41 +26,69 @@ public class OffreServiceImpl implements OffreService {
     }
 
     /**
-     * Pour trouver tous les offres
-     * @param pageable
+     * Pour trouver des offres
+     * @param search mot clé (libelle ou description)
+     * @param val valeur à chercher
+     * @param page numero de page
+     * @param sort pour filtrer (field et direction)
      * @return une page des offres
      */
     @Override
-    public Page<Offre> trouverTousLesOffres(Pageable pageable) {
-        return offreRepository.findAll(pageable);
-    }
+    public Page<Offre> trouverLesOffres(String search, String val, int page, String[] sort) {
 
-    /**
-     * Pour trouver une list des offres à partir de clé
-     * @param search libelle ou description
-     * @param val clé à chercher
-     * @param pageable
-     * @return une page des offres
-     */
-    @Override
-    public Page<Offre> trouverUneListeDesOffres(String search, String val, Pageable pageable) {
-        if(search.equals("libelle")){
-            return offreRepository.findByLibelleContainingIgnoreCase(val,pageable);
-        }else if(search.equals("description")){
-            return offreRepository.findByDescriptionContainingIgnoreCase(val,pageable);
-        }else{
-            return Page.empty(pageable);
+        page = page > 0 ? page : 0;
+
+        List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
+
+        Pageable pagingSort = PageRequest.of(page, PAGE_SIZE, Sort.by(orders));
+
+        Page<Offre> pageOffres;
+
+        if (search == null || val == null){
+            pageOffres = offreRepository.findAll(pagingSort);
+        }else {
+            if(search.equals("libelle")){
+                pageOffres = offreRepository.findByLibelleContainingIgnoreCase(val,pagingSort);
+            }else if(search.equals("description")){
+                pageOffres = offreRepository.findByDescriptionContainingIgnoreCase(val,pagingSort);
+            }else{
+                pageOffres = Page.empty(pagingSort);
+            }
         }
+
+        return pageOffres;
     }
 
     /**
      * Pour ajouter un offre
-     * @param offre entity
+     * @param offreDto dto
      * @return un objet de type Offre
      */
     @Override
-    public Offre ajouterOffre(Offre offre) {
+    public Offre ajouterOffre(OffreDto offreDto) {
+        Offre offre = new Offre(null,offreDto.getLibelle(), offreDto.getDescription(),null);
         return offreRepository.save(offre);
+    }
+
+    /**
+     * Pour modifier un offre
+     * @param id de l'offre
+     * @param offreDto dto
+     * @return objet de type offre
+     * @throws NotFoundException
+     */
+    @Override
+    public Offre modifierOffre(Long id, OffreDto offreDto) throws NotFoundException {
+        Optional<Offre> offreOptional = offreRepository.findById(id);
+
+        if(offreOptional.isPresent()){
+            Offre offre = offreOptional.get();
+            offre.setLibelle(offreDto.getLibelle());
+            offre.setDescription(offreDto.getDescription());
+            return offreRepository.save(offre);
+        }else{
+            throw new NotFoundException("Cet offre n'existe pas pour etre modifié!");
+        }
     }
 
     /**
@@ -62,8 +97,14 @@ public class OffreServiceImpl implements OffreService {
      * @return Optional<Offre>
      */
     @Override
-    public Optional<Offre> trouverUnOffreById(Long id) {
-        return offreRepository.findById(id);
+    public Offre trouverUnOffreById(Long id) throws NotFoundException {
+        Optional<Offre> offreOptional = offreRepository.findById(id);
+        if(offreOptional.isPresent()){
+            Offre offre = offreOptional.get();
+            return offre;
+        }else{
+            throw new NotFoundException("Cet offre n'existe pas");
+        }
     }
 
     /**
@@ -82,4 +123,5 @@ public class OffreServiceImpl implements OffreService {
     public void supprimerTousLesOffres() {
         offreRepository.deleteAll();
     }
+
 }

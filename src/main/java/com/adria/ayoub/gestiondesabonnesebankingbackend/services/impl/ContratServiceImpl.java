@@ -6,6 +6,7 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AbonneRepository;
@@ -83,16 +84,22 @@ public class ContratServiceImpl implements ContratService {
      * @return objet de type Contrat
      */
     @Override
-    public Contrat ajouterContrat(ContratDto contratDto) {
+    public Contrat ajouterContrat(ContratDto contratDto) throws AlreadyRelatedException, NotFoundException {
         Contrat contrat;
         Abonne abonne;
         List<Offre> offres;
+        Statut statut;
         if(contratDto.getAbonneId() != null){
             Optional<Abonne> abonneOptional = abonneRepository.findById(contratDto.getAbonneId());
+
             if(abonneOptional.isPresent()){
-                abonne = abonneOptional.get();
+                if(!abonneOptional.get().alreadyRelatedToAContrat()){
+                    abonne = abonneOptional.get();
+                }else{
+                    throw new AlreadyRelatedException("L'abonné que vous essayer d'associer à ce contrat, déja associé à une autre contrat!");
+                }
             }else{
-                abonne = null;
+                throw new NotFoundException("L'abonné que vous essaye d'ajouter à ce contrat n'existe pas!");
             }
         }else{
             abonne = null;
@@ -109,7 +116,18 @@ public class ContratServiceImpl implements ContratService {
             offres = null;
         }
 
-        contrat = new Contrat(null,contratDto.getIntitule(), contratDto.getStatut(),abonne,offres);
+        if(contratDto.getStatut().equalsIgnoreCase("ACTIF")){
+            statut = Statut.ACTIF;
+        }else{
+            statut = Statut.SUSPENDU;
+        }
+
+        contrat = new Contrat(null, contratDto.getIntitule(), statut, abonne, offres);
+
+        if(abonne != null){
+            abonne.setContrat(contrat);
+        }
+
         return contratRepository.save(contrat);
     }
 
@@ -120,18 +138,29 @@ public class ContratServiceImpl implements ContratService {
      * @return un objet de type Contrat
      */
     @Override
-    public Contrat modifierContrat(Long id,ContratDto contratDto) throws NotFoundException {
+    public Contrat modifierContrat(Long id,ContratDto contratDto) throws NotFoundException, AlreadyRelatedException {
         Optional<Contrat> contratOptional = contratRepository.findById(id);
 
         if (contratOptional.isPresent()) {
             Contrat contrat = contratOptional.get();
             contrat.setIntitule(contratDto.getIntitule());
-            contrat.setStatut(contratDto.getStatut());
+
+            if(contratDto.getStatut().equalsIgnoreCase("ACTIF")){
+                contrat.setStatut(Statut.ACTIF);
+            }else{
+                contrat.setStatut(Statut.SUSPENDU);
+            }
 
             if(contratDto.getAbonneId() != null){
                 Optional<Abonne> abonneOptional = abonneRepository.findById(contratDto.getAbonneId());
                 if(abonneOptional.isPresent()){
-                    contrat.setAbonne(abonneOptional.get());
+                    if(!abonneOptional.get().alreadyRelatedToAContratExceptThis(id)){
+                        contrat.associerAbonne(abonneOptional.get());
+                    }else{
+                        throw new AlreadyRelatedException("L'abonné que vous essayer d'associer à ce contrat, déja associé à une autre contrat!");
+                    }
+                }else{
+                    throw new NotFoundException("L'abonné que vous essaye d'ajouter à ce contrat n'existe pas!");
                 }
             }
 
@@ -143,6 +172,7 @@ public class ContratServiceImpl implements ContratService {
             }
 
             return contratRepository.save(contrat);
+
         } else {
             throw new NotFoundException("Cet offre n'existe pas pour etre modifié!");
         }

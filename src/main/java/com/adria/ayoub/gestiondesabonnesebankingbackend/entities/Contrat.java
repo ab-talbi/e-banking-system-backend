@@ -15,6 +15,8 @@ public class Contrat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String intitule;
+
+    @Enumerated(EnumType.STRING)
     private Statut statut;
 
     @JsonIgnore
@@ -57,5 +59,28 @@ public class Contrat {
      */
     public void retirerTousLesOffres(){
         offres.clear();
+    }
+
+    /**
+     * Pour associer un abonné
+     * @param abonne
+     */
+    public void associerAbonne(Abonne abonne){
+        //disassocier abonne si existe
+        disassocierAbonne();
+
+        abonne.setContrat(this);
+        setAbonne(abonne);
+
+    }
+
+    /**
+     * Pour disassocier un abonne
+     */
+    public void disassocierAbonne(){
+        if(this.abonne!=null){
+            this.abonne.setContrat(null);
+            setAbonne(null);
+        }
     }
 }

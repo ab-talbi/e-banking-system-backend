@@ -3,6 +3,7 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.controllers;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.services.ContratService;
 import jakarta.validation.Valid;
@@ -79,7 +80,7 @@ public class ContratController {
      * @return ResponseEntity<Contrat>
      */
     @PostMapping
-    public ResponseEntity<Contrat> ajouterUnContrat(@RequestBody @Valid ContratDto contratDto) {
+    public ResponseEntity<Contrat> ajouterUnContrat(@RequestBody @Valid ContratDto contratDto) throws AlreadyRelatedException, NotFoundException {
         Contrat contrat = contratService.ajouterContrat(contratDto);
         return new ResponseEntity<>(contrat, HttpStatus.CREATED);
     }
@@ -91,7 +92,7 @@ public class ContratController {
      * @return ResponseEntity<Contrat>
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Contrat> modifierUnContrat(@PathVariable("id") Long id, @RequestBody @Valid ContratDto contratDto) throws NotFoundException {
+    public ResponseEntity<Contrat> modifierUnContrat(@PathVariable("id") Long id, @RequestBody @Valid ContratDto contratDto) throws NotFoundException, AlreadyRelatedException {
         Contrat contrat = contratService.modifierContrat(id,contratDto);
         return new ResponseEntity<>(contrat, HttpStatus.OK);
     }

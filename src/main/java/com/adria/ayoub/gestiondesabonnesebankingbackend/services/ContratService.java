@@ -3,6 +3,7 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 
@@ -23,7 +24,7 @@ public interface ContratService {
      * @param contratDto
      * @return un objet de type Contrat
      */
-    Contrat ajouterContrat(ContratDto contratDto);
+    Contrat ajouterContrat(ContratDto contratDto) throws AlreadyRelatedException, NotFoundException;
 
     /**
      * Pour modifier un contrat
@@ -31,7 +32,7 @@ public interface ContratService {
      * @param contratDto dto
      * @return un objet de type Contrat
      */
-    Contrat modifierContrat(Long id,ContratDto contratDto) throws NotFoundException;
+    Contrat modifierContrat(Long id,ContratDto contratDto) throws NotFoundException, AlreadyRelatedException;
 
     /**
      * Pour teouver un contrat

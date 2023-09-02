@@ -21,10 +21,9 @@ public class ContratDto {
     private String intitule;
 
     @Column(length = 10)
-    @NotNull(message = "statut doit etre valide et contient soit ACTIF ou SUSPENDU")
-    @NotBlank(message = "statut doit etre valide et contient soit ACTIF ou SUSPENDU")
-    @Enumerated(EnumType.STRING)
-    private Statut statut;
+    @NotNull(message = "statut doit etre valide")
+    @NotBlank(message = "statut doit etre valide")
+    private String statut;
 
     private Long abonneId;
 

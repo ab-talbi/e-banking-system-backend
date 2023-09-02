@@ -56,8 +56,9 @@ public class Abonne {
         //disassocier contrat si existe
         disassocierContrat();
 
-        setContrat(contrat);
         contrat.setAbonne(this);
+        setContrat(contrat);
+
     }
 
     /**
@@ -68,5 +69,31 @@ public class Abonne {
             this.contrat.setAbonne(null);
             setContrat(null);
         }
+    }
+
+    /**
+     * Pour savoir est ce que l'attribut Contrat est deja rempli avec une autre contrat
+     * @param contrat_id
+     * @return soit true ou false
+     */
+    public boolean alreadyRelatedToAContratExceptThis(Long contrat_id){
+        if(this.contrat!=null){
+            if(this.contrat.getId() == contrat_id){
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Pour savoir est ce que l'attribut Contrat est deja rempli
+     * @return true or false
+     */
+    public boolean alreadyRelatedToAContrat(){
+        if(this.contrat!=null){
+            return true;
+        }
+        return false;
     }
 }

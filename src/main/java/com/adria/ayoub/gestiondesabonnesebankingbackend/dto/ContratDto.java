@@ -1,6 +1,5 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.dto;
 
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

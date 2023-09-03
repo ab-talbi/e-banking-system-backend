@@ -1,45 +1,48 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.AbonneDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Agence;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface AbonneService {
 
     /**
-     * Pour trouver tous les abonnes
-     * @param pageable
-     * @return une page des abonnes
-     */
-    Page<Abonne> trouverTousLesAbonnes(Pageable pageable);
-
-    /**
      * Pour trouver une list des abonnes à partir de clé
      * @param search nom, prenom, tel, email, statut, sexe...
      * @param val clé à chercher
-     * @param pageable
+     * @param page numero
+     * @param sort pour filtrer (field,direction)
      * @return une page des abonnes
      */
-    Page<Abonne> trouverUneListeDesAbonnes(String search,String val, Pageable pageable);
-
-    /**
-     * Pour ajouter un abonné
-     * @param abonne
-     * @return un objet de type abonné
-     */
-    Abonne ajouterAbonne(Abonne abonne);
+    Page<Abonne> trouverLesAbonnes(String search,String val, int page, String[] sort);
 
     /**
      * Pour trouver un abonné avec l'id passé au parametre
      * @param id de l'abonné
-     * @return Optional<Abonne>
+     * @return Abonne
      */
-    Optional<Abonne> trouverUnAbonneById(Long id);
+    Abonne trouverUnAbonneById(Long id) throws NotFoundException;
+
+    /**
+     * Pour ajouter un abonné
+     * @param abonneDto
+     * @return un objet de type abonné
+     */
+    Abonne ajouterAbonne(AbonneDto abonneDto) throws NotFoundException, AlreadyRelatedException;
+
+    /**
+     * Pour modifier un abonné
+     * @param id de l'abonné
+     * @param abonneDto dto
+     * @return un objet de type Abonne
+     */
+    Abonne modifierAbonne(Long id, AbonneDto abonneDto) throws NotFoundException, AlreadyRelatedException;
 
     /**
      * Pour supprimer un abonné
@@ -53,25 +56,57 @@ public interface AbonneService {
     void supprimerTousLesAbonnes();
 
     /**
-     * Pour trouver une agence
-     * @param agence_id de l'agence à trouver
-     * @return Optional<Agence>
+     * Pour changer le statut de l'abonné
+     * @param id de l'abonné
+     * @param requestBody la valeur de statut
+     * @return un objet de type Abonne
      */
-    Optional<Agence> trouverUneAgenceById(Long agence_id);
+    Abonne changerLeStatutDeLAbonne(Long id, String requestBody) throws NotFoundException;
 
     /**
-     * Pour teouver un backoffice
-     * @param backoffice_id de backoffice
-     * @return Optional<BackOffice>
+     * Pour associer une agence à un abonné
+     * @param abonne_id de l'abonné
+     * @param agence_id de l'agence
+     * @return un Abonne
      */
-    Optional<BackOffice> trouverUnBackOfficeById(Long backoffice_id);
+    Abonne associerAgence(Long abonne_id,Long agence_id) throws NotFoundException;
 
     /**
-     * Pour trouver un contrat
-     * @param contrat_id
-     * @return Optional<Contrat>
+     * Pour disassocier une agence d'un abonné
+     * @param abonne_id de l'abonné
+     * @return un Abonne
      */
-    Optional<Contrat> trouverUnContratById(Long contrat_id);
+    Abonne disassocierAgence(Long abonne_id) throws NotFoundException;
+
+    /**
+     * Pour associer un backoofice à un abonné
+     * @param abonne_id de l'abonné
+     * @param backoffice_id du backoffice
+     * @return un Abonne
+     */
+    Abonne associerBackOffice(Long abonne_id,Long backoffice_id) throws NotFoundException;
+
+    /**
+     * Pour disassocier un backoffice d'un abonné
+     * @param abonne_id de l'abonné
+     * @return un Abonne
+     */
+    Abonne disassocierBackOffice(Long abonne_id) throws NotFoundException;
+
+    /**
+     * Pour associer un contrat à un abonné
+     * @param abonne_id de l'abonné
+     * @param contrat_id du contrat
+     * @return un Abonne
+     */
+    Abonne associerContrat(Long abonne_id,Long contrat_id) throws NotFoundException, AlreadyRelatedException;
+
+    /**
+     * Pour disassocier un contrat d'un abonné
+     * @param abonne_id de l'abonné
+     * @return un Abonne
+     */
+    Abonne disassocierContrat(Long abonne_id) throws NotFoundException;
 
     /**
      * Pour convertir un String à un Long pour les deux methodes de l'agence et backoffice

@@ -83,4 +83,30 @@ public class Contrat {
             setAbonne(null);
         }
     }
+
+    /**
+     * Pour savoir est ce que l'attribut Abonne est deja rempli avec un autre abonne
+     * @param abonne_id
+     * @return soit true ou false
+     */
+    public boolean alreadyRelatedToAnAbonneExceptThis(Long abonne_id){
+        if(this.abonne!=null){
+            if(this.abonne.getId() == abonne_id){
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Pour savoir est ce que l'attribut Abonne est deja rempli
+     * @return true or false
+     */
+    public boolean alreadyRelatedToAnAbonne(){
+        if(this.abonne!=null){
+            return true;
+        }
+        return false;
+    }
 }

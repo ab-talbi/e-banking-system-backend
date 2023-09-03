@@ -62,8 +62,8 @@ public class ContratServiceImpl implements ContratService {
             if(search.equals("intitule")){
                 pageContrats = contratRepository.findByIntituleContainingIgnoreCase(val,pagingSort);
             }else if(search.equals("statut")){
-                if(val.equals("ACTIF") || val.equals("SUSPENDU")){
-                    Statut statut = Statut.valueOf(val);
+                if(val.equalsIgnoreCase("ACTIF") || val.equalsIgnoreCase("SUSPENDU")){
+                    Statut statut = Statut.valueOf(val.toUpperCase());
                     pageContrats = contratRepository.findByStatut(statut,pagingSort);
                 }else{
                     pageContrats = Page.empty(pagingSort);
@@ -76,6 +76,22 @@ public class ContratServiceImpl implements ContratService {
         }
 
         return pageContrats;
+    }
+
+    /**
+     * Pour trouver un contrat
+     * @param id de contrat à trouver
+     * @return Optional<Contrat>
+     */
+    @Override
+    public Contrat trouverUnContratById(Long id) throws NotFoundException {
+        Optional<Contrat> contratOptional = contratRepository.findById(id);
+        if(contratOptional.isPresent()){
+            Contrat contrat = contratOptional.get();
+            return contrat;
+        }else{
+            throw new NotFoundException("Ce Contrat n'existe pas");
+        }
     }
 
     /**
@@ -179,22 +195,6 @@ public class ContratServiceImpl implements ContratService {
     }
 
     /**
-     * Pour trouver un contrat
-     * @param id de contrat à trouver
-     * @return Optional<Contrat>
-     */
-    @Override
-    public Contrat trouverUnContratById(Long id) throws NotFoundException {
-        Optional<Contrat> contratOptional = contratRepository.findById(id);
-        if(contratOptional.isPresent()){
-            Contrat contrat = contratOptional.get();
-            return contrat;
-        }else{
-            throw new NotFoundException("Ce Contrat n'existe pas");
-        }
-    }
-
-    /**
      * Pour supprimer un contrat
      * @param id du contrat à supprimer
      */
@@ -250,15 +250,19 @@ public class ContratServiceImpl implements ContratService {
         Optional<Contrat> contratOptional = contratRepository.findById(id);
         Optional<Offre> offreOptional = offreRepository.findById(offre_id);
 
-        if(contratOptional.isPresent() && offreOptional.isPresent()){
-            Contrat contrat = contratOptional.get();
-            if(contrat.ajouterOffre(offreOptional.get())){
-                return contratRepository.save(contrat);
+        if(contratOptional.isPresent()){
+            if(offreOptional.isPresent()){
+                Contrat contrat = contratOptional.get();
+                if(contrat.ajouterOffre(offreOptional.get())){
+                    return contratRepository.save(contrat);
+                }else{
+                    throw new AlreadyExistsException("Cet offre existe déja parmis les offres de ce contrat!");
+                }
             }else{
-                throw new AlreadyExistsException("Cet offre existe déja parmis les offres de ce contrat!");
+                throw new NotFoundException("l'offre que vous voulez ajouter au contrat n'existe pas!");
             }
         }else{
-            throw new NotFoundException("contrat ou offre n'existe pas!");
+            throw new NotFoundException("contrat n'existe pas!");
         }
     }
 
@@ -273,12 +277,16 @@ public class ContratServiceImpl implements ContratService {
         Optional<Contrat> contratOptional = contratRepository.findById(id);
         Optional<Offre> offreOptional = offreRepository.findById(offre_id);
 
-        if(contratOptional.isPresent() && offreOptional.isPresent()){
-            Contrat contrat = contratOptional.get();
-            contrat.retirerOffre(offreOptional.get());
-            return contratRepository.save(contrat);
+        if(contratOptional.isPresent()){
+            if(offreOptional.isPresent()){
+                Contrat contrat = contratOptional.get();
+                contrat.retirerOffre(offreOptional.get());
+                return contratRepository.save(contrat);
+            }else{
+                throw new NotFoundException("l'offre n'existe pas!");
+            }
         }else{
-            throw new NotFoundException("contrat ou offre n'existe pas!");
+            throw new NotFoundException("contrat n'existe pas!");
         }
     }
 

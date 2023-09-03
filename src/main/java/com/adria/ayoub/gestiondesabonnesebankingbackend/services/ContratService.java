@@ -20,6 +20,13 @@ public interface ContratService {
     Page<Contrat> trouverLesContrats(String search, String val, int page, String[] sort);
 
     /**
+     * Pour teouver un contrat
+     * @param id de contrat à trouver
+     * @return Optional<Contrat>
+     */
+    Contrat trouverUnContratById(Long id) throws NotFoundException;
+
+    /**
      * Pour ajouter un contrat
      * @param contratDto
      * @return un objet de type Contrat
@@ -33,13 +40,6 @@ public interface ContratService {
      * @return un objet de type Contrat
      */
     Contrat modifierContrat(Long id,ContratDto contratDto) throws NotFoundException, AlreadyRelatedException;
-
-    /**
-     * Pour teouver un contrat
-     * @param id de contrat à trouver
-     * @return Optional<Contrat>
-     */
-    Contrat trouverUnContratById(Long id) throws NotFoundException;
 
     /**
      * Pour supprimer un contrat

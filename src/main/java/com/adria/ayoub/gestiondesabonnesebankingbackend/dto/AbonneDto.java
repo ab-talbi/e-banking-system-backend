@@ -14,16 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AbonneDto {
 
-    @Column(length = 50)
-    @NotNull(message = "nom doit etre valide et ne dépasse pas 50 lettres")
-    @NotBlank(message = "nom doit etre valide et ne dépasse pas 50 lettres")
-    @Pattern(regexp = "(/^[A-Za-z]+$/)", message = "Le nom doit contenir seulement des mots")
+    @Column(length = 32)
+    @Pattern(regexp = "^([a-zA-z\\s]{3,30})$", message = "Le nom doit etre valide, exemples : Nom, NOM, MON NOM...")
     private String nom;
 
-    @Column(length = 50)
-    @NotNull(message = "prenom doit etre valide et ne dépasse pas 50 lettres")
-    @NotBlank(message = "prenom doit etre valide et ne dépasse pas 50 lettres")
-    @Pattern(regexp = "(/^[A-Za-z]+$/)", message = "Le prénom doit contenir seulement des mots")
+    @Column(length = 32)
+    @Pattern(regexp = "^([a-zA-z\\s]{3,30})$", message = "Le prénom doit etre valide, exemple : Prenom, PRENOM, Mon Prenom")
     private String prenom;
 
     @Column(length = 50)

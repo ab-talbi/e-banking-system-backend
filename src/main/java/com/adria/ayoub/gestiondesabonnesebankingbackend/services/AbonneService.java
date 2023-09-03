@@ -2,13 +2,9 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.AbonneDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.BackOffice;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
-
-import java.util.Optional;
 
 public interface AbonneService {
 

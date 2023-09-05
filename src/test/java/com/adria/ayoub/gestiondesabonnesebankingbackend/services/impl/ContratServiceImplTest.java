@@ -3,6 +3,7 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AbonneRepository;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.ContratRepository;
@@ -18,9 +19,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -198,6 +199,36 @@ public class ContratServiceImplTest {
         Page<Contrat> contratPageTrouve = contratService.trouverLesContrats(search,val, page, sort);
 
         assertEquals(Page.empty(pageable),contratPageTrouve);
+    }
+
+    /**
+     * Pour tester la fonctionnalité de get un contrat by id valide
+     */
+    @Test
+    public void givenIdValide_whenTrouverUnContratById_thenReturnContratObject() throws NotFoundException {
+        Long contratId = 1L;
+        Contrat contrat = createContrat(1L,"Contrat 1");
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        Contrat contratTrouve = contratService.trouverUnContratById(contratId);
+
+        assertNotNull(contratTrouve);
+        assertEquals(contrat,contratTrouve);
+    }
+
+    /**
+     * Pour tester la fonctionnalité de get un contrat by id pas valide
+     */
+    @Test
+    public void givenIdPasValide_whenTrouverUnContratById_thenReturnNotFounException() {
+        Long contratId = 1L;
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            contratService.trouverUnContratById(contratId);
+        });
     }
 
 }

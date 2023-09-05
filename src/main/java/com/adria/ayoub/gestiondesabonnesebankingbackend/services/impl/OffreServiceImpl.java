@@ -60,6 +60,22 @@ public class OffreServiceImpl implements OffreService {
     }
 
     /**
+     * Pour trouver un offre avec l'id passé au parametre
+     * @param id de l'offre
+     * @return Optional<Offre>
+     */
+    @Override
+    public Offre trouverUnOffreById(Long id) throws NotFoundException {
+        Optional<Offre> offreOptional = offreRepository.findById(id);
+        if(offreOptional.isPresent()){
+            Offre offre = offreOptional.get();
+            return offre;
+        }else{
+            throw new NotFoundException("Cet offre n'existe pas");
+        }
+    }
+
+    /**
      * Pour ajouter un offre
      * @param offreDto dto
      * @return un objet de type Offre
@@ -88,22 +104,6 @@ public class OffreServiceImpl implements OffreService {
             return offreRepository.save(offre);
         }else{
             throw new NotFoundException("Cet offre n'existe pas pour etre modifié!");
-        }
-    }
-
-    /**
-     * Pour trouver un offre avec l'id passé au parametre
-     * @param id de l'offre
-     * @return Optional<Offre>
-     */
-    @Override
-    public Offre trouverUnOffreById(Long id) throws NotFoundException {
-        Optional<Offre> offreOptional = offreRepository.findById(id);
-        if(offreOptional.isPresent()){
-            Offre offre = offreOptional.get();
-            return offre;
-        }else{
-            throw new NotFoundException("Cet offre n'existe pas");
         }
     }
 

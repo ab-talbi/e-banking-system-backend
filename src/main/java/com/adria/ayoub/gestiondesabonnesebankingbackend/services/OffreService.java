@@ -18,6 +18,13 @@ public interface OffreService {
     Page<Offre> trouverLesOffres(String search,String val, int page, String[] sort);
 
     /**
+     * Pour trouver un offre
+     * @param id de l'offre à trouver
+     * @return Optional<Offre>
+     */
+    Offre trouverUnOffreById(Long id) throws NotFoundException;
+
+    /**
      * Pour ajouter un offre
      * @param offreDto à ajouter
      * @return objet de type offre
@@ -31,13 +38,6 @@ public interface OffreService {
      * @return un objet de type Offre
      */
     Offre modifierOffre(Long id,OffreDto offreDto) throws NotFoundException;
-
-    /**
-     * Pour trouver un offre
-     * @param id de l'offre à trouver
-     * @return Optional<Offre>
-     */
-    Offre trouverUnOffreById(Long id) throws NotFoundException;
 
     /**
      * Pour supprimer un offre

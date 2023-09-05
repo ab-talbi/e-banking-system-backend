@@ -632,7 +632,7 @@ public class ContratServiceImplTest {
      * Pour tester la methode retirerUnOffreDansUnContrat avec id_contrat valide et id_offre existe
      */
     @Test
-    public void givenIdContratValideEtIdOffreValide_whenRetirerUnOffreDansUnContrat_thenReturnContratObject() throws AlreadyExistsException, NotFoundException {
+    public void givenIdContratValideEtIdOffreValide_whenRetirerUnOffreDansUnContrat_thenReturnContratObject() throws NotFoundException {
         Long contratId = 1L;
         Long offreId = 1L;
 
@@ -681,4 +681,37 @@ public class ContratServiceImplTest {
             contratService.retirerUnOffreDansUnContrat(contratId,offreId);
         });
     }
+
+    /**
+     * Pour tester la methode retirerTousLesOffreDansUnContrat avec id_contrat pas valide
+     */
+    @Test
+    public void givenIdContratPasValide_whenRetirerTousLesOffreDansUnContrat_thenReturnNotFoundException() {
+        Long contratId = 1L;
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            contratService.retirerTousLesOffreDansUnContrat(contratId);
+        });
+    }
+
+    /**
+     * Pour tester la methode retirerTousLesOffreDansUnContrat avec id_contrat valide
+     */
+    @Test
+    public void givenIdContratValide_whenRetirerTousLesOffreDansUnContrat_thenReturnContratObject() throws NotFoundException {
+        Long contratId = 1L;
+
+        Contrat contrat = createContrat(contratId);
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenReturn(contrat);
+
+        Contrat contratApresAjoutOffre = contratService.retirerTousLesOffreDansUnContrat(contratId);
+
+        assertNotNull(contratApresAjoutOffre);
+        assertEquals(contrat, contratApresAjoutOffre);
+    }
+
 }

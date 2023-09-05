@@ -6,6 +6,7 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Sexe;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyExistsException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -55,11 +56,12 @@ public class ContratServiceImplTest {
 
     /**
      * Pour creer un objet de type Contrat
-     * @param intitule
      * @return Contrat
      */
-    private Contrat createContrat(Long id, String intitule){
-        Contrat contrat = new Contrat(id, intitule, Statut.ACTIF,null,null);
+    private Contrat createContrat(Long id){
+        List<Offre> offres = new ArrayList<>();
+
+        Contrat contrat = new Contrat(id, "Contrat "+id, Statut.ACTIF,null,offres);
         return contrat;
     }
 
@@ -75,13 +77,27 @@ public class ContratServiceImplTest {
     }
 
     /**
+     * Pour creer un offre
+     * @param id de l'offre
+     * @return Offre
+     */
+    private Offre createOffre(Long id){
+
+        List<Contrat> contrats = new ArrayList<>();
+
+        Offre offre = new Offre(id, "Offre "+id,"Description de l'offre "+id,contrats);
+
+        return offre;
+    }
+
+    /**
      * Pour creer une liste des offers de type Offre
      * @return List<Offre>
      */
     private List<Offre> createOffres(){
 
-        Offre offre1 = new Offre(1L, "Offre 1","Description de l'offre 1",null);
-        Offre offre2 = new Offre(2L, "Offre 2","Description de l'offre 2",null);
+        Offre offre1 = createOffre(1L);
+        Offre offre2 = createOffre(2L);
 
         List<Offre> offres = new ArrayList<>();
         offres.add(offre1);
@@ -101,8 +117,8 @@ public class ContratServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Contrat contrat1 = createContrat(1L,"Contrat 1");
-        Contrat contrat2  = createContrat(2L,"Contrat 2");
+        Contrat contrat1 = createContrat(1L);
+        Contrat contrat2  = createContrat(2L);
 
         List<Contrat> contrats = Arrays.asList(contrat1, contrat2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -128,8 +144,8 @@ public class ContratServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Contrat contrat1 = createContrat(1L,"Contrat 1");
-        Contrat contrat2 = createContrat(2L,"Contrat 2");
+        Contrat contrat1 = createContrat(1L);
+        Contrat contrat2 = createContrat(2L);
 
         List<Contrat> contrats = Arrays.asList(contrat1, contrat2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -155,8 +171,8 @@ public class ContratServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Contrat contrat1 = createContrat(1L,"Contrat 1");
-        Contrat contrat2 = createContrat(2L,"Contrat 2");
+        Contrat contrat1 = createContrat(1L);
+        Contrat contrat2 = createContrat(2L);
 
         List<Contrat> contrats = Arrays.asList(contrat1, contrat2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -200,8 +216,8 @@ public class ContratServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Contrat contrat1 = createContrat(1L,"Contrat 1");
-        Contrat contrat2 = createContrat(2L,"Contrat 2");
+        Contrat contrat1 = createContrat(1L);
+        Contrat contrat2 = createContrat(2L);
 
         List<Contrat> contrats = Arrays.asList(contrat1, contrat2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -240,7 +256,7 @@ public class ContratServiceImplTest {
     @Test
     public void givenIdValide_whenTrouverUnContratById_thenReturnContratObject() throws NotFoundException {
         Long contratId = 1L;
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
 
@@ -270,7 +286,7 @@ public class ContratServiceImplTest {
     @Test
     public void givenContratDtoObjectWithoutAbonneEtOffres_whenAjouterContrat_thenReturnContratObject() throws AlreadyRelatedException, NotFoundException {
         ContratDto contratDto = createContratDto("Contrat 1",null,null);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         when(contratRepository.save(any(Contrat.class))).thenReturn(contrat);
 
@@ -287,7 +303,7 @@ public class ContratServiceImplTest {
     @Test
     public void givenContratDtoObjectWithAbonneExisteEtValide_whenAjouterContrat_thenReturnContratObject() throws AlreadyRelatedException, NotFoundException {
         ContratDto contratDto = createContratDto("Contrat 1",1L,null);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         Abonne abonne = createAbonne(1L,null); //abonné valide car existe et pas lié à un autre contrat
 
@@ -308,7 +324,7 @@ public class ContratServiceImplTest {
     public void givenContratDtoObjectWithAbonneExisteEtPasValide_whenAjouterContrat_thenReturnAlreadyRelatedException(){
         ContratDto contratDto = createContratDto("Contrat 1",1L,null);
 
-        Contrat autreContrat = createContrat(2L,"Autre Contrat");
+        Contrat autreContrat = createContrat(2L);
         Abonne abonne = createAbonne(1L,autreContrat); //abonné valide car existe et lié à un autre contrat
 
         when(abonneRepository.findById(contratDto.getAbonneId())).thenReturn(Optional.of(abonne));
@@ -345,7 +361,7 @@ public class ContratServiceImplTest {
         offresIds.add(2L);
 
         ContratDto contratDto = createContratDto("Contrat 1",null,offresIds);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         List<Offre> offres = createOffres();
 
@@ -365,7 +381,7 @@ public class ContratServiceImplTest {
     public void givenContratDtoObjectEtIdValide_whenModifierContrat_ThenReturnContratObject() throws AlreadyRelatedException, NotFoundException {
         Long contratId = 1L;
         ContratDto contratDto = createContratDto("Contrat 1",null,null);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(contratRepository.save(any(Contrat.class))).thenReturn(contrat);
@@ -383,7 +399,7 @@ public class ContratServiceImplTest {
     public void givenContratDtoObjectEtIdValideEtAbonneExisteEtValide_whenModifierContrat_ThenReturnContratObject() throws AlreadyRelatedException, NotFoundException {
         Long contratId = 1L;
         ContratDto contratDto = createContratDto("Contrat 1",1L,null);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         Abonne abonne = createAbonne(1L,null); //abonne existe et valide
 
@@ -404,9 +420,9 @@ public class ContratServiceImplTest {
     public void givenContratDtoObjectEtIdValideEtAbonneExisteEtPasValide_whenModifierContrat_ThenReturnAlreadyRelatedException() {
         Long contratId = 1L;
         ContratDto contratDto = createContratDto("Contrat 1",1L,null);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
-        Contrat autreContrat = createContrat(2L,"Contrat 2");
+        Contrat autreContrat = createContrat(2L);
         Abonne abonne = createAbonne(1L,autreContrat); //abonne existe et pas valide (lié à un autre contrat)
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
@@ -424,7 +440,7 @@ public class ContratServiceImplTest {
     public void givenContratDtoObjectEtIdValideEtAbonnePasExiste_whenModifierContrat_ThenReturnNotFoundException() {
         Long contratId = 1L;
         ContratDto contratDto = createContratDto("Contrat 1",1L,null);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(abonneRepository.findById(contratDto.getAbonneId())).thenReturn(Optional.empty());
@@ -446,7 +462,7 @@ public class ContratServiceImplTest {
         offresIds.add(2L);
 
         ContratDto contratDto = createContratDto("Contrat 1",null,offresIds);
-        Contrat contrat = createContrat(1L,"Contrat 1");
+        Contrat contrat = createContrat(1L);
 
         List<Offre> offres = createOffres();
 
@@ -474,5 +490,195 @@ public class ContratServiceImplTest {
             contratService.modifierContrat(contratId,contratDto);
         });
 
+    }
+
+    /**
+     * Pour tester la suppression d'un contrat by id
+     */
+    @Test
+    public void givenId_whenSupprimerContratById_thenDoNothing(){
+
+        Contrat contrat = createContrat(1L);
+
+        contratService.supprimerContratById(contrat.getId());
+
+        verify(contratRepository, times(1)).deleteById(contrat.getId());
+    }
+
+    /**
+     * Pour tester la suppression de tous les contrats
+     */
+    @Test
+    public void givenNothing_whenSupprimerTousLesContrats_thenDoNothing(){
+
+        contratService.supprimerTousLesContrats();
+
+        verify(contratRepository, times(1)).deleteAll();
+    }
+
+    /**
+     * Pour tester la methode changerLeStatutDuContrat avec id valide
+     */
+    @Test
+    public void givenIdValide_whenChangerLeStatutDuContrat_thenReturnContratObject() throws NotFoundException {
+        Long contratId = 1L;
+        Contrat contrat = createContrat(contratId);
+        String statut = "suspendu";
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenReturn(contrat);
+
+        Contrat contratApresChangementDuStatut = contratService.changerLeStatutDuContrat(contratId,statut);
+
+        assertNotNull(contratApresChangementDuStatut);
+        assertEquals(contrat, contratApresChangementDuStatut);
+    }
+
+    /**
+     * Pour tester la methode changerLeStatutDuContrat avec id pas valide
+     */
+    @Test
+    public void givenIdPasValide_whenChangerLeStatutDuContrat_thenReturnNotFoundException() {
+        Long contratId = 1L;
+        String statut = "suspendu";
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            contratService.changerLeStatutDuContrat(contratId,statut);
+        });
+
+    }
+
+    /**
+     * Pour tester la methode ajouterUnOffreAUnContrat avec id_contrat valide et id_offre existe et pas ajouté précedement
+     */
+    @Test
+    public void givenIdContratValideEtIdOffreValideEtPasAjoutePrecedemet_whenAjouterUnOffreAUnContrat_thenReturnContratObject() throws AlreadyExistsException, NotFoundException {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        Contrat contrat = createContrat(contratId);
+        Offre offre = createOffre(offreId);
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(offreRepository.findById(offreId)).thenReturn(Optional.of(offre));
+        when(contratRepository.save(any(Contrat.class))).thenReturn(contrat);
+
+        Contrat contratApresAjoutOffre = contratService.ajouterUnOffreAUnContrat(contratId,offreId);
+
+        assertNotNull(contratApresAjoutOffre);
+        assertEquals(contrat, contratApresAjoutOffre);
+    }
+
+    /**
+     * Pour tester la methode ajouterUnOffreAUnContrat avec id_contrat valide et id_offre existe mais dejà ajouté
+     */
+    @Test
+    public void givenIdContratValideEtIdOffreValideEtDejaAjoute_whenAjouterUnOffreAUnContrat_thenReturnAlreadyExistsException() {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        Contrat contrat = createContrat(contratId);
+        Offre offre = createOffre(offreId);
+
+        List<Offre> offres = new ArrayList<>();
+        offres.add(offre);
+        //donc cette offre deja ajouté au contrat
+        contrat.setOffres(offres);
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(offreRepository.findById(offreId)).thenReturn(Optional.of(offre));
+
+        assertThrows(AlreadyExistsException.class, ()->{
+            contratService.ajouterUnOffreAUnContrat(contratId,offreId);
+        });
+    }
+
+    /**
+     * Pour tester la methode ajouterUnOffreAUnContrat avec id_contrat valide mais id_offre pas inexistant
+     */
+    @Test
+    public void givenIdContratValideEtIdOffrePasValide_whenAjouterUnOffreAUnContrat_thenReturnNotFoundException() {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        Contrat contrat = createContrat(contratId);
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(offreRepository.findById(offreId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            contratService.ajouterUnOffreAUnContrat(contratId,offreId);
+        });
+    }
+
+    /**
+     * Pour tester la methode ajouterUnOffreAUnContrat avec id_contrat pas valide
+     */
+    @Test
+    public void givenIdContratPasValide_whenAjouterUnOffreAUnContrat_thenReturnNotFoundException() {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            contratService.ajouterUnOffreAUnContrat(contratId,offreId);
+        });
+    }
+
+    /**
+     * Pour tester la methode retirerUnOffreDansUnContrat avec id_contrat valide et id_offre existe
+     */
+    @Test
+    public void givenIdContratValideEtIdOffreValide_whenRetirerUnOffreDansUnContrat_thenReturnContratObject() throws AlreadyExistsException, NotFoundException {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        Contrat contrat = createContrat(contratId);
+        Offre offre = createOffre(offreId);
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(offreRepository.findById(offreId)).thenReturn(Optional.of(offre));
+        when(contratRepository.save(any(Contrat.class))).thenReturn(contrat);
+
+        Contrat contratApresAjoutOffre = contratService.retirerUnOffreDansUnContrat(contratId,offreId);
+
+        assertNotNull(contratApresAjoutOffre);
+        assertEquals(contrat, contratApresAjoutOffre);
+    }
+
+    /**
+     * Pour tester la methode retirerUnOffreDansUnContrat avec id_contrat valide mais id_offre pas inexistant
+     */
+    @Test
+    public void givenIdContratValideEtIdOffrePasValide_whenRetirerUnOffreDansUnContrat_thenReturnNotFoundException() {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        Contrat contrat = createContrat(contratId);
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(offreRepository.findById(offreId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            contratService.retirerUnOffreDansUnContrat(contratId,offreId);
+        });
+    }
+
+    /**
+     * Pour tester la methode retirerUnOffreDansUnContrat avec id_contrat pas valide
+     */
+    @Test
+    public void givenIdContratPasValide_whenRetirerUnOffreDansUnContrat_thenReturnNotFoundException() {
+        Long contratId = 1L;
+        Long offreId = 1L;
+
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            contratService.retirerUnOffreDansUnContrat(contratId,offreId);
+        });
     }
 }

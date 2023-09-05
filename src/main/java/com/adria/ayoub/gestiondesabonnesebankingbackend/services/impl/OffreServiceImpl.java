@@ -1,6 +1,7 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.OffreDto;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
@@ -82,7 +83,8 @@ public class OffreServiceImpl implements OffreService {
      */
     @Override
     public Offre ajouterOffre(OffreDto offreDto) {
-        Offre offre = new Offre(null,offreDto.getLibelle(), offreDto.getDescription(),null);
+        List<Contrat> contrats = new ArrayList<>();
+        Offre offre = new Offre(null,offreDto.getLibelle(), offreDto.getDescription(),contrats);
         return offreRepository.save(offre);
     }
 

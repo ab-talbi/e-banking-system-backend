@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,7 +104,7 @@ public class ContratServiceImpl implements ContratService {
     public Contrat ajouterContrat(ContratDto contratDto) throws AlreadyRelatedException, NotFoundException {
         Contrat contrat;
         Abonne abonne;
-        List<Offre> offres;
+        List<Offre> offres = new ArrayList<>();
         Statut statut;
         if(contratDto.getAbonneId() != null){
             Optional<Abonne> abonneOptional = abonneRepository.findById(contratDto.getAbonneId());
@@ -125,11 +126,7 @@ public class ContratServiceImpl implements ContratService {
             List<Offre> _offres = offreRepository.findAllById(contratDto.getOffresIds());
             if(!_offres.isEmpty()){
                 offres = _offres;
-            }else{
-                offres = null;
             }
-        }else{
-            offres = null;
         }
 
         if(contratDto.getStatut().equalsIgnoreCase("ACTIF")){

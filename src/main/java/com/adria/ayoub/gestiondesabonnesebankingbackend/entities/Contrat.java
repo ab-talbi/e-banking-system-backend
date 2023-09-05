@@ -38,8 +38,10 @@ public class Contrat {
      * @return true si l'offre est ajouté, false si l'offre deja existe
      */
     public boolean ajouterOffre(Offre offre) {
-        if (offres.stream().anyMatch(o -> o.getId().equals(offre.getId()))) {
-            return false;
+        if(this.offres!=null){
+            if (offres.stream().anyMatch(o -> o.getId().equals(offre.getId()))) {
+                return false;
+            }
         }
         offres.add(offre);
         return true;
@@ -50,15 +52,19 @@ public class Contrat {
      * @param offre objet
      */
     public void retirerOffre(Offre offre){
-        offres.remove(offre);
-        offre.getContrats().remove(this);
+        if(this.offres != null){
+            offres.remove(offre);
+            offre.getContrats().remove(this);
+        }
     }
 
     /**
      * Pour retirer tous les offres du contrat
      */
     public void retirerTousLesOffres(){
-        offres.clear();
+        if(this.offres != null){
+            offres.clear();
+        }
     }
 
     /**

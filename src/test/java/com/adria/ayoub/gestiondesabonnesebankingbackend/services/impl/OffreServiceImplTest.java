@@ -1,6 +1,7 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.OffreDto;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -44,11 +46,11 @@ public class OffreServiceImplTest {
 
     /**
      * Pour creer un objet de type Offre
-     * @param libelle
      * @return Offre
      */
-    private Offre createOffre(Long id,String libelle){
-        Offre offre = new Offre(id, libelle,"Description de l'"+libelle.toLowerCase(),null);
+    private Offre createOffre(Long id){
+        List<Contrat> contrats = new ArrayList<>();
+        Offre offre = new Offre(id, "Offre "+id,"Description de l'offre "+id,contrats);
         return offre;
     }
 
@@ -63,8 +65,8 @@ public class OffreServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Offre offre1 = createOffre(1L,"Offre 1");
-        Offre offre2 = createOffre(2L,"Offre 2");
+        Offre offre1 = createOffre(1L);
+        Offre offre2 = createOffre(2L);
 
         List<Offre> offres = Arrays.asList(offre1, offre2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -90,8 +92,8 @@ public class OffreServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Offre offre1 = createOffre(1L,"Offre 1");
-        Offre offre2 = createOffre(2L,"Offre 2");
+        Offre offre1 = createOffre(1L);
+        Offre offre2 = createOffre(2L);
 
         List<Offre> offres = Arrays.asList(offre1, offre2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -117,8 +119,8 @@ public class OffreServiceImplTest {
         String[] sort = new String[]{"id","desc"};
         List<Sort.Order> orders = SortEtOrder.getOrdersFromSortParam(sort);
 
-        Offre offre1 = createOffre(1L,"Offre 1");
-        Offre offre2 = createOffre(2L,"Offre 2");
+        Offre offre1 = createOffre(1L);
+        Offre offre2 = createOffre(2L);
 
         List<Offre> offres = Arrays.asList(offre1, offre2);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(orders));
@@ -157,7 +159,7 @@ public class OffreServiceImplTest {
     @Test
     public void givenIdValide_whenTrouverUnOffreById_ThenReturnOffreObject() throws NotFoundException {
         Long offreId = 1L;
-        Offre offre = createOffre(1L,"Offre 1");
+        Offre offre = createOffre(1L);
 
         when(offreRepository.findById(offreId)).thenReturn(Optional.of(offre));
 
@@ -187,7 +189,7 @@ public class OffreServiceImplTest {
     @Test
     public void givenOffreDtoObject_whenAjouterOffre_ThenReturnOffreObject(){
         OffreDto offreDto = createOffreDto("Offre 1");
-        Offre offre = createOffre(1L,"Offre 1");
+        Offre offre = createOffre(1L);
 
         when(offreRepository.save(any(Offre.class))).thenReturn(offre);
 
@@ -207,7 +209,7 @@ public class OffreServiceImplTest {
     public void givenOffreDtoObjectEtIdValide_whenModifierOffre_ThenReturnOffreObject() throws NotFoundException {
         Long offreId = 1L;
         OffreDto offreDto = createOffreDto("Offre 1");
-        Offre offre = createOffre(1L,"Offre 1");
+        Offre offre = createOffre(1L);
 
         when(offreRepository.findById(offreId)).thenReturn(Optional.of(offre));
         when(offreRepository.save(any(Offre.class))).thenReturn(offre);
@@ -242,7 +244,7 @@ public class OffreServiceImplTest {
     @Test
     public void givenId_whenSupprimerOffreById_thenDoNothing(){
 
-        Offre offre = createOffre(1L, "Offre 1");
+        Offre offre = createOffre(1L);
 
         offreService.supprimerOffreById(offre.getId());
 

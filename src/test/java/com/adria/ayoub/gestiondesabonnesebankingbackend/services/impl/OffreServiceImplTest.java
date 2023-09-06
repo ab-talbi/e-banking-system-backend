@@ -36,12 +36,11 @@ public class OffreServiceImplTest {
 
     /**
      * Pour creer un objet de type OffreDto
-     * @param libelle
+     * @param libelle de l'offre
      * @return OffreDto
      */
     private OffreDto createOffreDto(String libelle){
-        OffreDto offreDto = OffreDto.build(libelle, "Description de l'"+libelle.toLowerCase());
-        return offreDto;
+        return OffreDto.build(libelle, "Description de l'"+libelle.toLowerCase());
     }
 
     /**
@@ -50,8 +49,7 @@ public class OffreServiceImplTest {
      */
     private Offre createOffre(Long id){
         List<Contrat> contrats = new ArrayList<>();
-        Offre offre = new Offre(id, "Offre "+id,"Description de l'offre "+id,contrats);
-        return offre;
+        return new Offre(id, "Offre "+id,"Description de l'offre "+id,contrats);
     }
 
     /**
@@ -178,9 +176,7 @@ public class OffreServiceImplTest {
 
         when(offreRepository.findById(offreId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            offreService.trouverUnOffreById(offreId);
-        });
+        assertThrows(NotFoundException.class, () -> offreService.trouverUnOffreById(offreId));
     }
 
     /**
@@ -233,9 +229,7 @@ public class OffreServiceImplTest {
 
         when(offreRepository.findById(offreId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            offreService.modifierOffre(offreId,offreDto);
-        });
+        assertThrows(NotFoundException.class, () -> offreService.modifierOffre(offreId,offreDto));
     }
 
     /**

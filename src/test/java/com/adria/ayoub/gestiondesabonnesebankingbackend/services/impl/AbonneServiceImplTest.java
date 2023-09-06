@@ -52,8 +52,7 @@ public class AbonneServiceImplTest {
      * @return AbonneDto
      */
     private AbonneDto createAbonneDto(Long contratId, Long agenceId, Long backOfficeId){
-        AbonneDto abonneDto = AbonneDto.build("NOM","PRENOM","EMAIL@EXAMPLE.COM","ADRESSE","TEL","HOMME","ACTIF",contratId,agenceId,backOfficeId);
-        return abonneDto;
+        return AbonneDto.build("NOM","PRENOM","EMAIL@EXAMPLE.COM","ADRESSE","TEL","HOMME","ACTIF",contratId,agenceId,backOfficeId);
     }
 
     /**
@@ -65,8 +64,7 @@ public class AbonneServiceImplTest {
      * @return un Abonne
      */
     private Abonne createAbonne(Long id, Contrat contrat, Agence agence, BackOffice backOffice){
-        Abonne abonne = new Abonne(id,"NOM","PRENOM","EMAIL@EXAMPLE.COM","ADRESSE","TEL", Sexe.HOMME, Statut.ACTIF,contrat,agence,backOffice);
-        return abonne;
+        return new Abonne(id,"NOM","PRENOM","EMAIL@EXAMPLE.COM","ADRESSE","TEL", Sexe.HOMME, Statut.ACTIF,contrat,agence,backOffice);
     }
 
     /**
@@ -77,8 +75,7 @@ public class AbonneServiceImplTest {
      */
     private Contrat createContrat(Long id, Abonne abonne){
         List<Offre> offres = new ArrayList<>();
-        Contrat contrat = new Contrat(id,"Contrat "+id,Statut.ACTIF,abonne,offres);
-        return contrat;
+        return new Contrat(id,"Contrat "+id,Statut.ACTIF,abonne,offres);
     }
 
     /**
@@ -88,8 +85,7 @@ public class AbonneServiceImplTest {
      */
     private Agence createAgence(Long id){
         List<Abonne> abonnes = new ArrayList<>();
-        Agence agence = new Agence(id,"Agence "+id,"Adresse de l'agence "+id,abonnes);
-        return agence;
+        return new Agence(id,"Agence "+id,"Adresse de l'agence "+id,abonnes);
     }
 
     /**
@@ -99,8 +95,7 @@ public class AbonneServiceImplTest {
      */
     private BackOffice createBackOffice(Long id){
         List<Abonne> abonnes = new ArrayList<>();
-        BackOffice backOffice = new BackOffice(id,"Nom de Backoffice "+id,"Prenom de Backoffice "+id,"email de backoffice "+id,abonnes);
-        return backOffice;
+        return new BackOffice(id,"Nom de Backoffice "+id,"Prenom de Backoffice "+id,"email de backoffice "+id,abonnes);
     }
 
     /**
@@ -517,9 +512,7 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.trouverUnAbonneById(abonneId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.trouverUnAbonneById(abonneId));
     }
 
     /**
@@ -570,9 +563,7 @@ public class AbonneServiceImplTest {
 
         when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.of(contrat));
 
-        assertThrows(AlreadyRelatedException.class, () -> {
-            abonneService.ajouterAbonne(abonneDto);
-        });
+        assertThrows(AlreadyRelatedException.class, () -> abonneService.ajouterAbonne(abonneDto));
     }
 
     /**
@@ -585,9 +576,7 @@ public class AbonneServiceImplTest {
 
         when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.ajouterAbonne(abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.ajouterAbonne(abonneDto));
     }
 
     /**
@@ -619,9 +608,7 @@ public class AbonneServiceImplTest {
 
         when(agenceRepository.findById(abonneDto.getAgenceId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.ajouterAbonne(abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.ajouterAbonne(abonneDto));
     }
 
     /**
@@ -653,9 +640,7 @@ public class AbonneServiceImplTest {
 
         when(backOfficeRepository.findById(abonneDto.getBackOfficeId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.ajouterAbonne(abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.ajouterAbonne(abonneDto));
     }
 
     /**
@@ -714,9 +699,7 @@ public class AbonneServiceImplTest {
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
         when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.of(contrat));
 
-        assertThrows(AlreadyRelatedException.class, () -> {
-            abonneService.modifierAbonne(abonneId,abonneDto);
-        });
+        assertThrows(AlreadyRelatedException.class, () -> abonneService.modifierAbonne(abonneId,abonneDto));
     }
 
     /**
@@ -732,9 +715,7 @@ public class AbonneServiceImplTest {
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
         when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.modifierAbonne(abonneId,abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.modifierAbonne(abonneId,abonneDto));
     }
 
     /**
@@ -772,9 +753,7 @@ public class AbonneServiceImplTest {
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
         when(agenceRepository.findById(abonneDto.getAgenceId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.modifierAbonne(abonneId,abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.modifierAbonne(abonneId,abonneDto));
     }
 
     /**
@@ -812,9 +791,7 @@ public class AbonneServiceImplTest {
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
         when(backOfficeRepository.findById(abonneDto.getBackOfficeId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.modifierAbonne(abonneId,abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.modifierAbonne(abonneId,abonneDto));
     }
     
     /**
@@ -827,9 +804,7 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.modifierAbonne(abonneId,abonneDto);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.modifierAbonne(abonneId,abonneDto));
     }
 
     /**
@@ -884,9 +859,7 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            abonneService.changerLeStatutDeLAbonne(abonneId,statut);
-        });
+        assertThrows(NotFoundException.class, ()-> abonneService.changerLeStatutDeLAbonne(abonneId,statut));
     }
 
     /**
@@ -923,9 +896,7 @@ public class AbonneServiceImplTest {
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
         when(agenceRepository.findById(agenceId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.associerAgence(abonneId,agenceId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.associerAgence(abonneId,agenceId));
     }
 
     /**
@@ -938,9 +909,7 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.associerAgence(abonneId,agenceId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.associerAgence(abonneId,agenceId));
     }
 
     /**
@@ -970,9 +939,7 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.disassocierAgence(abonneId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.disassocierAgence(abonneId));
     }
 
     /**
@@ -1009,9 +976,7 @@ public class AbonneServiceImplTest {
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
         when(backOfficeRepository.findById(backOfficeId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.associerBackOffice(abonneId,backOfficeId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.associerBackOffice(abonneId,backOfficeId));
     }
 
     /**
@@ -1024,9 +989,7 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.associerBackOffice(abonneId,backOfficeId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.associerBackOffice(abonneId,backOfficeId));
     }
 
     /**
@@ -1056,9 +1019,105 @@ public class AbonneServiceImplTest {
 
         when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            abonneService.disassocierBackOffice(abonneId);
-        });
+        assertThrows(NotFoundException.class, () -> abonneService.disassocierBackOffice(abonneId));
+    }
+
+    /**
+     * Pour tester la methode associerContrat avec id_abonne valide et id_contrat valide ainsi que le contrat pas lié à un autre abonné
+     */
+    @Test
+    public void givenIdAbonneValideEtContratValide_whenAssocierContrat_thenReturnAbonneObject() throws NotFoundException, AlreadyRelatedException {
+        Long abonneId = 1L;
+        Long contratId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+        Contrat contrat = createContrat(contratId,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresAssocierContrat = abonneService.associerContrat(abonneId,contratId);
+
+        assertNotNull(abonneApresAssocierContrat);
+        assertEquals(abonne, abonneApresAssocierContrat);
+    }
+
+    /**
+     * Pour tester la methode associerContrat avec id_abonne valide et id_contrat valide mais contrat associé à un autre abonné
+     */
+    @Test
+    public void givenIdAbonneValideEtIdContratPasValide_whenAssocierContrat_thenReturnAlreadyRelatedException() {
+        Long abonneId = 1L;
+        Long contratId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+        Abonne autreAbonne = createAbonne(2L,null,null,null);
+        Contrat contrat = createContrat(contratId,autreAbonne); //Pas valide car lié à un autre abonné
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        assertThrows(AlreadyRelatedException.class, () -> abonneService.associerContrat(abonneId,contratId));
+    }
+
+    /**
+     * Pour tester la methode associerContrat avec id_abonne valide et id_contrat pas null, mais n'existe pas
+     */
+    @Test
+    public void givenIdAbonneValideEtContratPasExiste_whenAssocierBackOffice_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        Long contratId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> abonneService.associerContrat(abonneId,contratId));
+    }
+
+    /**
+     * Pour tester la methode associerContrat avec id_abonne pas valide
+     */
+    @Test
+    public void givenIdAbonnePasValide_whenAssocierContrat_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        Long contratId = 1L;
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> abonneService.associerContrat(abonneId,contratId));
+    }
+
+    /**
+     * Pour tester la methode disassocierContrat avec id_abonne valide
+     */
+    @Test
+    public void givenIdAbonneValide_whenDisassocierContrat_thenReturnAbonneObject() throws NotFoundException {
+        Long abonneId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresDisassocierContrat = abonneService.disassocierContrat(abonneId);
+
+        assertNotNull(abonneApresDisassocierContrat);
+        assertEquals(abonne, abonneApresDisassocierContrat);
+    }
+
+    /**
+     * Pour tester la methode disassocierContrat avec id_abonne pas valide
+     */
+    @Test
+    public void givenIdAbonnePasValide_whenDisassocierContrat_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> abonneService.disassocierContrat(abonneId));
     }
 
 }

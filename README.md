@@ -247,3 +247,52 @@ http://localhost:8089/api/contrats/1
 http://localhost:8089/api/contrats
 
 ```
+
+### ```OffreController``` en **port 8089**
+
+* GET des offres
+```
+http://localhost:8089/api/offres
+
+```
+```
+http://localhost:8089/api/offres/1
+
+```
+```
+http://localhost:8089/api/offres?search=description&val=ffr&page=0&sort=description,asc
+
+```
+
+* POST un offre
+
+```
+http://localhost:8089/api/offres
+
+{
+    "libelle":"offre",
+    "description":"description de l'offre"
+}
+
+```
+
+* PUT (modifier) un offre
+```
+http://localhost:8089/api/offres/1
+
+{
+    "libelle":"offre modifié",
+    "description":"description de l'offre modifié"
+}
+```
+* DELETE supprimer un offre (1)
+```
+http://localhost:8089/api/offres/1
+
+```
+
+* DELETE supprimer tous les offres
+```
+http://localhost:8089/api/offres
+
+```

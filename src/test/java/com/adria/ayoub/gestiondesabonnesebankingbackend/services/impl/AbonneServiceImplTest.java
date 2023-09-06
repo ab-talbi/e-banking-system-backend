@@ -889,5 +889,176 @@ public class AbonneServiceImplTest {
         });
     }
 
+    /**
+     * Pour tester la methode associerAgence avec id_abonne valide et id_agence valide
+     */
+    @Test
+    public void givenIdAbonneValideEtIdAgenceValide_whenAssocierAgence_thenReturnAbonneObject() throws NotFoundException {
+        Long abonneId = 1L;
+        Long agenceId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+        Agence agence = createAgence(agenceId);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(agenceRepository.findById(agenceId)).thenReturn(Optional.of(agence));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresAssocierAgence = abonneService.associerAgence(abonneId,agenceId);
+
+        assertNotNull(abonneApresAssocierAgence);
+        assertEquals(abonne, abonneApresAssocierAgence);
+    }
+
+    /**
+     * Pour tester la methode associerAgence avec id_abonne valide et id_agence pas existe
+     */
+    @Test
+    public void givenIdAbonneValideEtIdAgencePasValide_whenAssocierAgence_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        Long agenceId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(agenceRepository.findById(agenceId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.associerAgence(abonneId,agenceId);
+        });
+    }
+
+    /**
+     * Pour tester la methode associerAgence avec id_abonne pas valide
+     */
+    @Test
+    public void givenIdAbonnePasValide_whenAssocierAgence_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        Long agenceId = 1L;
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.associerAgence(abonneId,agenceId);
+        });
+    }
+
+    /**
+     * Pour tester la methode disassocierAgence avec id_abonne valide
+     */
+    @Test
+    public void givenIdAbonneValide_whenDisassocierAgence_thenReturnAbonneObject() throws NotFoundException {
+        Long abonneId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresDisassocierAgence = abonneService.disassocierAgence(abonneId);
+
+        assertNotNull(abonneApresDisassocierAgence);
+        assertEquals(abonne, abonneApresDisassocierAgence);
+    }
+
+    /**
+     * Pour tester la methode disassocierAgence avec id_abonne pas valide
+     */
+    @Test
+    public void givenIdAbonnePasValide_whenDisassocierAgence_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.disassocierAgence(abonneId);
+        });
+    }
+
+    /**
+     * Pour tester la methode associerBackOffice avec id_abonne valide et id_backoffice valide
+     */
+    @Test
+    public void givenIdAbonneValideEtIdBackOfficeValide_whenAssocierBackOffice_thenReturnAbonneObject() throws NotFoundException {
+        Long abonneId = 1L;
+        Long backOfficeId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+        BackOffice backOffice = createBackOffice(backOfficeId);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(backOfficeRepository.findById(backOfficeId)).thenReturn(Optional.of(backOffice));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresAssocierBackOffice = abonneService.associerBackOffice(abonneId,backOfficeId);
+
+        assertNotNull(abonneApresAssocierBackOffice);
+        assertEquals(abonne, abonneApresAssocierBackOffice);
+    }
+
+    /**
+     * Pour tester la methode associerBackOffice avec id_abonne valide et id_agence pas existe
+     */
+    @Test
+    public void givenIdAbonneValideEtIdBackOfficePasValide_whenAssocierBackOffice_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        Long backOfficeId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(backOfficeRepository.findById(backOfficeId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.associerBackOffice(abonneId,backOfficeId);
+        });
+    }
+
+    /**
+     * Pour tester la methode associerBackOffice avec id_abonne pas valide
+     */
+    @Test
+    public void givenIdAbonnePasValide_whenAssocierBackOffice_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        Long backOfficeId = 1L;
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.associerBackOffice(abonneId,backOfficeId);
+        });
+    }
+
+    /**
+     * Pour tester la methode disassocierBackOffice avec id_abonne valide
+     */
+    @Test
+    public void givenIdAbonneValide_whenDisassocierBackOffice_thenReturnAbonneObject() throws NotFoundException {
+        Long abonneId = 1L;
+
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresDisassocierBackOffice = abonneService.disassocierBackOffice(abonneId);
+
+        assertNotNull(abonneApresDisassocierBackOffice);
+        assertEquals(abonne, abonneApresDisassocierBackOffice);
+    }
+
+    /**
+     * Pour tester la methode disassocierBackOffice avec id_abonne pas valide
+     */
+    @Test
+    public void givenIdAbonnePasValide_whenDisassocierBackOffice_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.disassocierBackOffice(abonneId);
+        });
+    }
 
 }

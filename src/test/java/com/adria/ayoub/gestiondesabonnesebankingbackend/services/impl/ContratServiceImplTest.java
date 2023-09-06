@@ -46,12 +46,11 @@ public class ContratServiceImplTest {
 
     /**
      * Pour creer un objet de type ContratDto
-     * @param intitule
+     * @param intitule de contrat
      * @return ContratDto
      */
     private ContratDto createContratDto(String intitule,Long abonneId, List<Long> offresIds){
-        ContratDto contratDto = ContratDto.build(intitule,"Actif",abonneId,offresIds);
-        return contratDto;
+        return ContratDto.build(intitule,"Actif",abonneId,offresIds);
     }
 
     /**
@@ -61,19 +60,17 @@ public class ContratServiceImplTest {
     private Contrat createContrat(Long id){
         List<Offre> offres = new ArrayList<>();
 
-        Contrat contrat = new Contrat(id, "Contrat "+id, Statut.ACTIF,null,offres);
-        return contrat;
+        return new Contrat(id, "Contrat "+id, Statut.ACTIF,null,offres);
     }
 
     /**
      * Pour creer un objet de type Abonne
      * @param id de l'abonné
-     * @param contrat
+     * @param contrat si existe
      * @return Abonne
      */
     private Abonne createAbonne(Long id, Contrat contrat){
-        Abonne abonne = new Abonne(id,"NOM","PRENOM","EMAIL@EXAMPLE.COM","ADRESSE","TEL", Sexe.HOMME, Statut.ACTIF,contrat,null,null);
-        return abonne;
+        return new Abonne(id,"NOM","PRENOM","EMAIL@EXAMPLE.COM","ADRESSE","TEL", Sexe.HOMME, Statut.ACTIF,contrat,null,null);
     }
 
     /**
@@ -85,9 +82,7 @@ public class ContratServiceImplTest {
 
         List<Contrat> contrats = new ArrayList<>();
 
-        Offre offre = new Offre(id, "Offre "+id,"Description de l'offre "+id,contrats);
-
-        return offre;
+        return new Offre(id, "Offre "+id,"Description de l'offre "+id,contrats);
     }
 
     /**
@@ -275,9 +270,7 @@ public class ContratServiceImplTest {
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            contratService.trouverUnContratById(contratId);
-        });
+        assertThrows(NotFoundException.class, () -> contratService.trouverUnContratById(contratId));
     }
 
     /**
@@ -329,9 +322,7 @@ public class ContratServiceImplTest {
 
         when(abonneRepository.findById(contratDto.getAbonneId())).thenReturn(Optional.of(abonne));
 
-        assertThrows(AlreadyRelatedException.class, () -> {
-            contratService.ajouterContrat(contratDto);
-        });
+        assertThrows(AlreadyRelatedException.class, () -> contratService.ajouterContrat(contratDto));
     }
 
     /**
@@ -344,9 +335,7 @@ public class ContratServiceImplTest {
 
         when(abonneRepository.findById(contratDto.getAbonneId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            contratService.ajouterContrat(contratDto);
-        });
+        assertThrows(NotFoundException.class, () -> contratService.ajouterContrat(contratDto));
     }
 
     /**
@@ -428,9 +417,7 @@ public class ContratServiceImplTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(abonneRepository.findById(contratDto.getAbonneId())).thenReturn(Optional.of(abonne));
 
-        assertThrows(AlreadyRelatedException.class, () -> {
-            contratService.modifierContrat(contratId,contratDto);
-        });
+        assertThrows(AlreadyRelatedException.class, () -> contratService.modifierContrat(contratId,contratDto));
     }
 
     /**
@@ -445,9 +432,7 @@ public class ContratServiceImplTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(abonneRepository.findById(contratDto.getAbonneId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            contratService.modifierContrat(contratId,contratDto);
-        });
+        assertThrows(NotFoundException.class, () -> contratService.modifierContrat(contratId,contratDto));
     }
 
     /**
@@ -486,9 +471,7 @@ public class ContratServiceImplTest {
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () ->{
-            contratService.modifierContrat(contratId,contratDto);
-        });
+        assertThrows(NotFoundException.class, () -> contratService.modifierContrat(contratId,contratDto));
 
     }
 
@@ -544,9 +527,7 @@ public class ContratServiceImplTest {
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            contratService.changerLeStatutDuContrat(contratId,statut);
-        });
+        assertThrows(NotFoundException.class, ()-> contratService.changerLeStatutDuContrat(contratId,statut));
 
     }
 
@@ -590,9 +571,7 @@ public class ContratServiceImplTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(offreRepository.findById(offreId)).thenReturn(Optional.of(offre));
 
-        assertThrows(AlreadyExistsException.class, ()->{
-            contratService.ajouterUnOffreAUnContrat(contratId,offreId);
-        });
+        assertThrows(AlreadyExistsException.class, ()-> contratService.ajouterUnOffreAUnContrat(contratId,offreId));
     }
 
     /**
@@ -608,9 +587,7 @@ public class ContratServiceImplTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(offreRepository.findById(offreId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            contratService.ajouterUnOffreAUnContrat(contratId,offreId);
-        });
+        assertThrows(NotFoundException.class, ()-> contratService.ajouterUnOffreAUnContrat(contratId,offreId));
     }
 
     /**
@@ -623,9 +600,7 @@ public class ContratServiceImplTest {
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            contratService.ajouterUnOffreAUnContrat(contratId,offreId);
-        });
+        assertThrows(NotFoundException.class, ()-> contratService.ajouterUnOffreAUnContrat(contratId,offreId));
     }
 
     /**
@@ -662,9 +637,7 @@ public class ContratServiceImplTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
         when(offreRepository.findById(offreId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            contratService.retirerUnOffreDansUnContrat(contratId,offreId);
-        });
+        assertThrows(NotFoundException.class, ()-> contratService.retirerUnOffreDansUnContrat(contratId,offreId));
     }
 
     /**
@@ -677,9 +650,7 @@ public class ContratServiceImplTest {
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            contratService.retirerUnOffreDansUnContrat(contratId,offreId);
-        });
+        assertThrows(NotFoundException.class, ()-> contratService.retirerUnOffreDansUnContrat(contratId,offreId));
     }
 
     /**
@@ -691,9 +662,7 @@ public class ContratServiceImplTest {
 
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->{
-            contratService.retirerTousLesOffreDansUnContrat(contratId);
-        });
+        assertThrows(NotFoundException.class, ()-> contratService.retirerTousLesOffreDansUnContrat(contratId));
     }
 
     /**

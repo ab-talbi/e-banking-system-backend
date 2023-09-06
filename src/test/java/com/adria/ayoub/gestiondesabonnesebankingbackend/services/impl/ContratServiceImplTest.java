@@ -714,4 +714,5 @@ public class ContratServiceImplTest {
         assertEquals(contrat, contratApresAjoutOffre);
     }
 
+
 }

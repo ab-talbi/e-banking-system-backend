@@ -1,9 +1,11 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.AbonneDto;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.*;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Sexe;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.help.SortEtOrder;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.repositories.AbonneRepository;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -517,6 +520,142 @@ public class AbonneServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> {
             abonneService.trouverUnAbonneById(abonneId);
+        });
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonné (avec contrat, agence et backoffice null)
+     */
+    @Test
+    public void givenAbonneDtoObjectWithoutContratEtAgenceEtBackOffice_whenAjouterAbonne_thenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        AbonneDto abonneDto = createAbonneDto(null,null,null);
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneAjoute = abonneService.ajouterAbonne(abonneDto);
+
+        assertNotNull(abonneAjoute);
+        assertEquals(abonne,abonneAjoute);
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat existe et valide et agence null et backoffice null)
+     * exemple je veux enregistrer un abonne avec un contrat existe dans la base de donnés + n'est pas lié à un autre abonne
+     */
+    @Test
+    public void givenAbonneDtoObjectWithContratExisteEtValide_whenAjouterAbonne_thenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        AbonneDto abonneDto = createAbonneDto(1L,null,null);
+        Contrat contrat = createContrat(1L,null); //valide car n'est pas lié à un autre abonné
+        Abonne abonne = createAbonne(1L,contrat,null,null);
+
+        when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.of(contrat));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneAjoute = abonneService.ajouterAbonne(abonneDto);
+
+        assertNotNull(abonneAjoute);
+        assertEquals(abonne,abonneAjoute);
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat existe mais pas valide et agence null et backoffice null)
+     * exemple je veux enregistrer un abonne avec un contrat existe dans la base de donnés mais lié à un autre abonne
+     */
+    @Test
+    public void givenAbonneDtoObjectWithContratExisteEtPasValide_whenAjouterAbonne_thenReturnAbonneObject(){
+        AbonneDto abonneDto = createAbonneDto(1L,null,null);
+
+        Abonne autreAbonne = createAbonne(1L, null, null,null);
+        Contrat contrat = createContrat(1L,autreAbonne); //pas valide car lié à un autre abonné
+
+        when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.of(contrat));
+
+        assertThrows(AlreadyRelatedException.class, () -> {
+            abonneService.ajouterAbonne(abonneDto);
+        });
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat n'existe pas et agence null et backoffice null)
+     * exemple je veux enregistrer un abonne avec un contrat qui n'existe pas dans la base de donnés --> NotFoundException
+     */
+    @Test
+    public void givenAbonneDtoObjectWithContratPasExiste_whenAjouterAbonne_thenReturnNotFoundException(){
+        AbonneDto abonneDto = createAbonneDto(1L,null,null);
+
+        when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.ajouterAbonne(abonneDto);
+        });
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat null, agence existe et backoffice null)
+     * exemple je veux enregistrer un abonne avec une agence existe dans la base de donnés
+     */
+    @Test
+    public void givenAbonneDtoObjectWithAgenceExiste_whenAjouterAbonne_thenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        AbonneDto abonneDto = createAbonneDto(null,1L,null);
+        Agence agence = createAgence(1L);
+        Abonne abonne = createAbonne(1L,null,agence,null);
+
+        when(agenceRepository.findById(abonneDto.getAgenceId())).thenReturn(Optional.of(agence));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneAjoute = abonneService.ajouterAbonne(abonneDto);
+
+        assertNotNull(abonneAjoute);
+        assertEquals(abonne,abonneAjoute);
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat null, agence existe pas et backoffice null)
+     * exemple je veux enregistrer un abonne avec une agence qui n'existe pas dans la base de donnés --> NotFoundException
+     */
+    @Test
+    public void givenAbonneDtoObjectWithAgencePasExiste_whenAjouterAbonne_thenReturnNotFoundException(){
+        AbonneDto abonneDto = createAbonneDto(null,5L,null);
+
+        when(agenceRepository.findById(abonneDto.getAgenceId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.ajouterAbonne(abonneDto);
+        });
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat null, agence null et backoffice existe)
+     * exemple je veux enregistrer un abonne avec un backoffice existe dans la base de donnés
+     */
+    @Test
+    public void givenAbonneDtoObjectWithBackOfficeExiste_whenAjouterAbonne_thenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        AbonneDto abonneDto = createAbonneDto(null,null,1L);
+        BackOffice backOffice = createBackOffice(1L);
+        Abonne abonne = createAbonne(1L,null,null,backOffice);
+
+        when(backOfficeRepository.findById(abonneDto.getBackOfficeId())).thenReturn(Optional.of(backOffice));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneAjoute = abonneService.ajouterAbonne(abonneDto);
+
+        assertNotNull(abonneAjoute);
+        assertEquals(abonne,abonneAjoute);
+    }
+
+    /**
+     * Pour tester la methode de l'ajout de l'abonne (avec contrat null, agence null et backoffice existe pas)
+     * exemple je veux enregistrer un abonne avec un backoffice qui n'existe pas dans la base de donnés --> NotFoundException
+     */
+    @Test
+    public void givenAbonneDtoObjectWithBackOfficePasExiste_whenAjouterAbonne_thenReturnNotFoundException(){
+        AbonneDto abonneDto = createAbonneDto(null,null,1L);
+
+        when(backOfficeRepository.findById(abonneDto.getBackOfficeId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.ajouterAbonne(abonneDto);
         });
     }
 }

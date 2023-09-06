@@ -1,7 +1,6 @@
 package com.adria.ayoub.gestiondesabonnesebankingbackend.services.impl;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.AbonneDto;
-import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.ContratDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.*;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Sexe;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.enums.Statut;
@@ -658,4 +657,179 @@ public class AbonneServiceImplTest {
             abonneService.ajouterAbonne(abonneDto);
         });
     }
+
+    /**
+     * Pour tester la methode de mise à jour de l'abonné qui deja existe sans modifier contrat,agence ou backoffice
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValide_whenModifierAbonne_ThenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(null,null,null);
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneModifie = abonneService.modifierAbonne(abonneId,abonneDto);
+
+        assertNotNull(abonneModifie);
+        assertEquals(abonne,abonneModifie);
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec contrat pas null et existe et pas lié à un autre abonné
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtContratValide_whenModifierAbonne_ThenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(1L,null,null);
+
+        Contrat contrat = createContrat(1L,null); //valide car pas lié à un autre abonné (ou lié au meme abonné)
+
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.of(contrat));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneModifie = abonneService.modifierAbonne(abonneId,abonneDto);
+
+        assertNotNull(abonneModifie);
+        assertEquals(abonne,abonneModifie);
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec contrat pas null et existe mais lié à un autre abonné
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtContratPasValide_whenModifierAbonne_ThenReturnAlreadyRelatedException() {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(1L,null,null);
+
+        Abonne autreAbonne = createAbonne(2L,null,null,null);
+        Contrat contrat = createContrat(1L,autreAbonne); //pas valide car lié à un autre abonné
+
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.of(contrat));
+
+        assertThrows(AlreadyRelatedException.class, () -> {
+            abonneService.modifierAbonne(abonneId,abonneDto);
+        });
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec contrat pas null, mais n'existe pas
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtContratPasExiste_whenModifierAbonne_ThenReturnNotFoundException() {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(1L,null,null);
+
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(contratRepository.findById(abonneDto.getContratId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.modifierAbonne(abonneId,abonneDto);
+        });
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec une agence pas null et existe
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtAgenceExiste_whenModifierAbonne_ThenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(null,1L,null);
+
+        Agence agence = createAgence(1L);
+
+        Abonne abonne = createAbonne(1L,null,agence,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(agenceRepository.findById(abonneDto.getAgenceId())).thenReturn(Optional.of(agence));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneModifie = abonneService.modifierAbonne(abonneId,abonneDto);
+
+        assertNotNull(abonneModifie);
+        assertEquals(abonne,abonneModifie);
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec agence pas null, mais n'existe pas
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtAgencePasExiste_whenModifierAbonne_ThenReturnNotFoundException() {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(null,1L,null);
+
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(agenceRepository.findById(abonneDto.getAgenceId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.modifierAbonne(abonneId,abonneDto);
+        });
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec un backoffice pas null et existe
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtBackOfficeExiste_whenModifierAbonne_ThenReturnAbonneObject() throws AlreadyRelatedException, NotFoundException {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(null,null,1L);
+
+        BackOffice backOffice = createBackOffice(1L);
+
+        Abonne abonne = createAbonne(1L,null,null,backOffice);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(backOfficeRepository.findById(abonneDto.getBackOfficeId())).thenReturn(Optional.of(backOffice));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneModifie = abonneService.modifierAbonne(abonneId,abonneDto);
+
+        assertNotNull(abonneModifie);
+        assertEquals(abonne,abonneModifie);
+    }
+
+    /**
+     * Pour tester la methode de mise à jour d'un abonné qui existe, avec backoffice pas null, mais n'existe pas
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdValideEtBackOfficePasExiste_whenModifierAbonne_ThenReturnNotFoundException() {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(null,null,1L);
+
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(backOfficeRepository.findById(abonneDto.getBackOfficeId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.modifierAbonne(abonneId,abonneDto);
+        });
+    }
+    
+    /**
+     * Pour tester la methode de mise à jour de l'abonné qui pas existe
+     */
+    @Test
+    public void givenAbonneDtoObjectEtIdPasValide_whenModifierAbonne_ThenReturnNotFoundException() {
+        Long abonneId = 1L;
+        AbonneDto abonneDto = createAbonneDto(null,null,null);
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            abonneService.modifierAbonne(abonneId,abonneDto);
+        });
+    }
+
 }

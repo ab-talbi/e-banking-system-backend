@@ -5,7 +5,7 @@ Cette partie est développé avec Spring boot, contient trois services : AbonneS
 Ce projet de gestion des abonnés et leurs contrats est développé pour le but d'aider l'agent backoffice de bien gérer les abonnés, faire des operations create, update, delete, faire des recherches par différents attributs, ainsi que le tri avec n'importe quel attribut.
 </br>
 ## Les APIs
-VoICi quelsue REST endpoints défine dans :
+VoICi quelques REST endpoints définies :
 ### ```AbonneController``` en **port 8089**
 
 * GET des abonnés

@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -831,5 +831,63 @@ public class AbonneServiceImplTest {
             abonneService.modifierAbonne(abonneId,abonneDto);
         });
     }
+
+    /**
+     * Pour tester la suppression d'un abonné by id
+     */
+    @Test
+    public void givenId_whenSupprimerAbonneById_thenDoNothing(){
+
+        Abonne abonne = createAbonne(1L,null,null,null);
+
+        abonneService.supprimerAbonneById(abonne.getId());
+
+        verify(abonneRepository, times(1)).deleteById(abonne.getId());
+    }
+
+    /**
+     * Pour tester la suppression de tous les abonnés
+     */
+    @Test
+    public void givenNothing_whenSupprimerTousLesAbonnes_thenDoNothing(){
+
+        abonneService.supprimerTousLesAbonnes();
+
+        verify(abonneRepository, times(1)).deleteAll();
+    }
+
+    /**
+     * Pour tester la methode changerLeStatutDeLAbonne avec id valide
+     */
+    @Test
+    public void givenIdValide_whenChangerLeStatutDeLAbonne_thenReturnAbonneObject() throws NotFoundException {
+        Long abonneId = 1L;
+        Abonne abonne = createAbonne(abonneId,null,null,null);
+        String statut = "suspendu";
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.of(abonne));
+        when(abonneRepository.save(any(Abonne.class))).thenReturn(abonne);
+
+        Abonne abonneApresChangementDuStatut = abonneService.changerLeStatutDeLAbonne(abonneId,statut);
+
+        assertNotNull(abonneApresChangementDuStatut);
+        assertEquals(abonne, abonneApresChangementDuStatut);
+    }
+
+    /**
+     * Pour tester la methode changerLeStatutDeLAbonne avec id pas valide
+     */
+    @Test
+    public void givenIdPasValide_whenChangerLeStatutDeLAbonne_thenReturnNotFoundException() {
+        Long abonneId = 1L;
+        String statut = "suspendu";
+
+        when(abonneRepository.findById(abonneId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, ()->{
+            abonneService.changerLeStatutDeLAbonne(abonneId,statut);
+        });
+    }
+
 
 }

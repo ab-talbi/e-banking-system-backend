@@ -158,122 +158,92 @@ http://localhost:8089/api/contrats?search=abonne&val=ahm&page=0&sort=intitule,de
 
 ```
 
-* POST un abonné
+* POST un contrat
 
 ```
-http://localhost:8089/api/abonnes
+http://localhost:8089/api/contrats
 
 {
-    "nom":"Saadani",
-    "prenom":"Brahim",
-    "email":"brahim@gmail.com",
-    "adresse":"852, Av Gueliz, Marrkech",
-    "telephone":"+212611111111",
-    "sexe":"homme",
-    "statut":"actif"
+    "intitule":"CONTRAT 1",
+    "statut":"ACTif"
 }
 
 ```
 ```
-http://localhost:8089/api/abonnes
+http://localhost:8089/api/contrats
 
 {
-    "nom":"LAMIN",
-    "prenom":"Amina",
-    "email":"amina@hotmail.fr",
-    "adresse":"986, bd Rachidi , Lusitania CASABLANCA",
-    "telephone":"00212500101212",
-    "sexe":"FEMME",
+    "intitule":"CONTRAT 2",
+    "statut":"actif",
+    "abonneId":2
+}
+
+```
+```
+http://localhost:8089/api/contrats
+
+{
+    "intitule":"CONTRAT 3",
     "statut":"ACTIF",
-    "contratId":1
+    "abonneId":3,
+    "offresIds":[1,2,3]
 }
 
 ```
+
+* PUT (modifier) un contrat
 ```
-http://localhost:8089/api/abonnes
+http://localhost:8089/api/contrats/1
 
 {
-    "nom":"KAMAL",
-    "prenom":"Ahmed",
-    "email":"ahmed@gmail.com",
-    "adresse":"12, bd Dar Tounsi, Marrakech",
-    "telephone":"00212798989898",
-    "sexe":"Homme",
+    "intitule":"contrat 1 modifié",
+    "statut":"SUSPENDU"
+}
+```
+
+```
+http://localhost:8089/api/contrats/2
+
+{
+    "intitule":"contrat 2 modifié",
     "statut":"ACTIF",
-    "contratId":3,
-    "agenceId":3,
-    "backOfficeId":3
-}
-
-```
-
-* PUT (modifier) un abonné
-```
-http://localhost:8089/api/abonnes/1
-
-{
-    "nom":"SAADANI",
-    "prenom":"Brahim",
-    "email":"brahim@yahoo.fr",
-    "adresse":"852, Av Gueliz, Marrkech",
-    "telephone":"00212622222222",
-    "sexe":"HOMME",
-    "statut":"Suspendu",
-    "contratId":1,
-    "agenceId":1,
-    "backOfficeId":1
+    "abonneId":1,
+    "offresIds":[1]
 }
 ```
-* PUT changer statut d'un abonné
+* PUT changer le statut d'un contrat
 ```
-http://localhost:8089/api/abonnes/1/statut
+http://localhost:8089/api/contrats/1/statut
 
 "ACTIF"
 ```
 
-* PUT associer une agence (3) à un abonné (2)
+* PUT ajouter un offre (1) au contrat (2)
 ```
-http://localhost:8089/api/abonnes/2/agence/3
+http://localhost:8089/api/contrats/2/offres/1
 
 ```
 
-* PUT associer un backOffice (3) à un abonné (2)
+* PUT retirer un offre (1) du contrat (2)
 ```
-http://localhost:8089/api/abonnes/2/backoffice/3
+http://localhost:8089/api/contrats/2/offres/1/retirer
 
 ```
 
-* PUT associer un contrat (2) à un abonné (2)
+* PUT retirer tous les offres d'un contrat (3)
 ```
-http://localhost:8089/api/abonnes/2/contrat/2
+http://localhost:8089/api/contrats/3/retirer_tous_les_offres
 
 ```
 
-* PUT disassocier l'agence de l'abonné (1)
+* DELETE supprimer un contrat (1)
 ```
-http://localhost:8089/api/abonnes/1/retirer_agence
+http://localhost:8089/api/contrats/1
 
 ```
 
-* PUT disassocier le backoffice de l'abonné (1)
+* DELETE supprimer tous les contrats
 ```
-http://localhost:8089/api/abonnes/1/retirer_backoffice
-
-```
-* PUT disassocier le contrat de l'abonné (1)
-```
-http://localhost:8089/api/abonnes/1/retirer_contrat
-
-```
-
-* DELETE supprimer l'abonné (1)
-```
-http://localhost:8089/api/abonnes/1
-
-```
-
-* DELETE supprimer tous les abonnés
-```
-http://localhost:8089/api/abonnes
+http://localhost:8089/api/contrats
 
 ```

@@ -165,4 +165,14 @@ public class ContratController {
         return new ResponseEntity<>(contrat,HttpStatus.OK);
     }
 
+    /**
+     * Get request pour chercher/filtrer des contrats
+     * @return List des contrats qui sont disponible
+     */
+    @GetMapping("disponibles")
+    public ResponseEntity<List<Contrat>> getLesContratsAyantPasUnAboone() {
+        List<Contrat> contrats = contratService.getLesContratsDisponibles();
+        return new ResponseEntity<>(contrats, HttpStatus.OK);
+    }
+
 }

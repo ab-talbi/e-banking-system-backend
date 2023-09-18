@@ -304,4 +304,14 @@ public class ContratServiceImpl implements ContratService {
             throw new NotFoundException("contrat n'existe pas!");
         }
     }
+
+    /**
+     * pour trouver les contrats disponible (pas d'abonné associé)
+     * @return liste des contrats
+     */
+    @Override
+    public List<Contrat> getLesContratsDisponibles() {
+        List<Contrat> contrats = contratRepository.findAllContratsThatHaveNoAbonne();
+        return contrats;
+    }
 }

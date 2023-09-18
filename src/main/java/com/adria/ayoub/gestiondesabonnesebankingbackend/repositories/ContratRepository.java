@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ContratRepository extends JpaRepository<Contrat, Long> {
 
     /**
@@ -33,4 +35,11 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
      */
     @Query("SELECT c FROM Contrat c WHERE c.abonne.nom LIKE %:value% or c.abonne.prenom LIKE %:value%")
     Page<Contrat> findByNomOuPrenomAbonneContains(String value, Pageable pageable);
+
+    /**
+     * chercher les contrats disponibles
+     * @return une liste dess contrats
+     */
+    @Query("SELECT c FROM Contrat c LEFT JOIN c.abonne a WHERE a IS NULL")
+    List<Contrat> findAllContratsThatHaveNoAbonne();
 }

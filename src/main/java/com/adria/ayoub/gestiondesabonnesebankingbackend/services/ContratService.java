@@ -7,6 +7,8 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelate
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface ContratService {
 
     /**
@@ -82,4 +84,10 @@ public interface ContratService {
      * @return un objet de type Contrat
      */
     Contrat retirerTousLesOffreDansUnContrat(Long id) throws NotFoundException;
+
+    /**
+     * pour trouver les contrats disponible (pas d'abonné associé)
+     * @return liste des contrats
+     */
+    List<Contrat> getLesContratsDisponibles();
 }

@@ -197,4 +197,14 @@ public class AbonneController {
         return new ResponseEntity<>(abonne, HttpStatus.OK);
     }
 
+    /**
+     * Get request pour chercher des abonnés dispo
+     * @return List des abonnés qui sont disponible
+     */
+    @GetMapping("disponibles")
+    public ResponseEntity<List<Abonne>> getLesAbonnesAyantPasUnContrat() {
+        List<Abonne> abonnes = abonneService.getLesAbonnesDisponibles();
+        return new ResponseEntity<>(abonnes, HttpStatus.OK);
+    }
+
 }

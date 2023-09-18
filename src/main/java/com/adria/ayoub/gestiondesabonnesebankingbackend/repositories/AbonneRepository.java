@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface AbonneRepository extends JpaRepository<Abonne, Long> {
 
     /**
@@ -92,4 +94,11 @@ public interface AbonneRepository extends JpaRepository<Abonne, Long> {
      */
     @Query("SELECT a FROM Abonne a WHERE a.backOffice.id = :id")
     Page<Abonne> findByBackOffice(Long id, Pageable pageable);
+
+    /**
+     * chercher les abonnes disponibles
+     * @return une liste des abonnes
+     */
+    @Query("SELECT a FROM Abonne a LEFT JOIN a.contrat c WHERE c IS NULL")
+    List<Abonne> findAllAbonnesThatHaveNoContrat();
 }

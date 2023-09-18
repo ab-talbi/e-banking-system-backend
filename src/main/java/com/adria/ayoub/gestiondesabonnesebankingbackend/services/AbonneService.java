@@ -2,9 +2,12 @@ package com.adria.ayoub.gestiondesabonnesebankingbackend.services;
 
 import com.adria.ayoub.gestiondesabonnesebankingbackend.dto.AbonneDto;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Abonne;
+import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Contrat;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.AlreadyRelatedException;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface AbonneService {
 
@@ -110,4 +113,10 @@ public interface AbonneService {
      * @return Long
      */
     Long stringToLong(String input);
+
+    /**
+     * pour trouver les abonnes disponible (pas de contrat associé)
+     * @return liste des abonnes
+     */
+    List<Abonne> getLesAbonnesDisponibles();
 }

@@ -466,4 +466,14 @@ public class AbonneServiceImpl implements AbonneService {
 
         return null;
     }
+
+    /**
+     * pour trouver les abonnes disponible (pas de contrat associé)
+     * @return liste des abonnes
+     */
+    @Override
+    public List<Abonne> getLesAbonnesDisponibles() {
+        List<Abonne> abonnes = abonneRepository.findAllAbonnesThatHaveNoContrat();
+        return abonnes;
+    }
 }

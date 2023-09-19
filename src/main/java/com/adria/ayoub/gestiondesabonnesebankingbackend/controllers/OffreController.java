@@ -114,4 +114,14 @@ public class OffreController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Get request pour trouver tous les offres
+     * @return List des offres
+     */
+    @GetMapping("tous")
+    public ResponseEntity<List<Offre>> getTousLesOffres() {
+        List<Offre> offres = offreService.trouverTousLesOffres();
+        return new ResponseEntity<>(offres, HttpStatus.OK);
+    }
+
 }

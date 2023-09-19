@@ -5,6 +5,8 @@ import com.adria.ayoub.gestiondesabonnesebankingbackend.entities.Offre;
 import com.adria.ayoub.gestiondesabonnesebankingbackend.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface OffreService {
 
     /**
@@ -49,4 +51,10 @@ public interface OffreService {
      * Pour supprimer tous les offres
      */
     void supprimerTousLesOffres();
+
+    /**
+     * Pour trouver la liste de tous les offres
+     * @return Liste des offres
+     */
+    List<Offre> trouverTousLesOffres();
 }

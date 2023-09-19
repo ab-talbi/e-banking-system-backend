@@ -126,4 +126,13 @@ public class OffreServiceImpl implements OffreService {
         offreRepository.deleteAll();
     }
 
+    /**
+     * Pour trouver la liste de tous les offres
+     * @return Liste des offres
+     */
+    @Override
+    public List<Offre> trouverTousLesOffres() {
+        return offreRepository.findAll();
+    }
+
 }

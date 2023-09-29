@@ -22,6 +22,6 @@ public class Agence {
     private String adresse;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "agence",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "agence",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Abonne> abonnes = new ArrayList<>();
 }

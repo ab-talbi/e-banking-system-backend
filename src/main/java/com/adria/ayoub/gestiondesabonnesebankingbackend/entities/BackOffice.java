@@ -25,6 +25,6 @@ public class BackOffice {
     private String email;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "backOffice",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "backOffice",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Abonne> abonnes = new ArrayList<>();
 }

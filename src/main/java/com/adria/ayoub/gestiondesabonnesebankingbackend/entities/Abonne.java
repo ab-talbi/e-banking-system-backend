@@ -25,11 +25,11 @@ public class Abonne {
     @JoinColumn(name = "contrat_id")
     private Contrat contrat;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "agence_id", referencedColumnName = "id")
     private Agence agence;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "backoffice_id", referencedColumnName = "id")
     private BackOffice backOffice;
 
